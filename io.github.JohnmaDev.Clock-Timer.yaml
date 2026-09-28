@@ -1,4 +1,4 @@
-app-id: io.github.JohnmaDev.ClockTimer
+app-id: io.github.JohnmaDev.Clock-Timer
 runtime: org.kde.Platform
 runtime-version: '6.11'
 sdk: org.kde.Sdk
@@ -36,9 +36,9 @@ modules:
         EOF
       - chmod +x /app/bin/clock-timer
       # Desktop, metainfo, and icon
-      - install -D -m644 io.github.JohnmaDev.ClockTimer.desktop /app/share/applications/io.github.JohnmaDev.ClockTimer.desktop
-      - install -D -m644 io.github.JohnmaDev.ClockTimer.metainfo.xml /app/share/metainfo/io.github.JohnmaDev.ClockTimer.metainfo.xml
-      - install -D -m644 io.github.JohnmaDev.ClockTimer.png /app/share/icons/hicolor/512x512/apps/io.github.JohnmaDev.ClockTimer.png
+      - install -D -m644 io.github.JohnmaDev.Clock-Timer.desktop /app/share/applications/io.github.JohnmaDev.Clock-Timer.desktop
+      - install -D -m644 io.github.JohnmaDev.Clock-Timer.metainfo.xml /app/share/metainfo/io.github.JohnmaDev.Clock-Timer.metainfo.xml
+      - install -D -m644 io.github.JohnmaDev.Clock-Timer.png /app/share/icons/hicolor/512x512/apps/io.github.JohnmaDev.Clock-Timer.png
     sources:
       - type: git
         url: https://github.com/JohnmaDev/Clock-Timer.git

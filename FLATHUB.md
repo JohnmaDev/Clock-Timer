@@ -23,11 +23,11 @@ No son exactamente lo mismo, pero van de la mano:
 
 Flathub solo exige:
 1. ✅ **Licencia libre / Open Source** (tenemos licencia MIT en el repositorio).
-2. ✅ **Identificador único de aplicación (App ID)** en formato reverse-DNS (`io.github.JohnmaDev.ClockTimer`).
-3. ✅ **Archivo de metadatos AppStream válido** (`io.github.JohnmaDev.ClockTimer.metainfo.xml`), validado con `appstreamcli`.
-4. ✅ **Archivo `.desktop` estándar** (`io.github.JohnmaDev.ClockTimer.desktop`).
-5. ✅ **Icono PNG de 512x512** con transparencia (`io.github.JohnmaDev.ClockTimer.png`).
-6. ✅ **Manifiesto de compilación Flatpak** (`io.github.JohnmaDev.ClockTimer.yaml`).
+2. ✅ **Identificador único de aplicación (App ID)** en formato reverse-DNS (`io.github.JohnmaDev.Clock-Timer`).
+3. ✅ **Archivo de metadatos AppStream válido** (`io.github.JohnmaDev.Clock-Timer.metainfo.xml`), validado con `appstreamcli`.
+4. ✅ **Archivo `.desktop` estándar** (`io.github.JohnmaDev.Clock-Timer.desktop`).
+5. ✅ **Icono PNG de 512x512** con transparencia (`io.github.JohnmaDev.Clock-Timer.png`).
+6. ✅ **Manifiesto de compilación Flatpak** (`io.github.JohnmaDev.Clock-Timer.yaml`).
 
 ¡Tu proyecto ya cuenta con todos estos requisitos preparados y validados!
 
@@ -56,21 +56,21 @@ Crea tu primer release en GitHub:
 
 ### Paso 3: Crear una rama con tu App ID
 En tu computadora o directamente en la interfaz web de GitHub de tu fork:
-1. Crea una rama llamada `io.github.JohnmaDev.ClockTimer`:
+1. Crea una rama llamada `io.github.JohnmaDev.Clock-Timer`:
    ```bash
    git clone https://github.com/JohnmaDev/flathub.git
    cd flathub
-   git checkout -b io.github.JohnmaDev.ClockTimer
+   git checkout -b io.github.JohnmaDev.Clock-Timer
    ```
 
-2. Agrega el manifiesto de la aplicación `io.github.JohnmaDev.ClockTimer.yaml`:
-   Copia el archivo `io.github.JohnmaDev.ClockTimer.yaml` de este repositorio a la raíz de la rama en el fork.
+2. Agrega el manifiesto de la aplicación `io.github.JohnmaDev.Clock-Timer.yaml`:
+   Copia el archivo `io.github.JohnmaDev.Clock-Timer.yaml` de este repositorio a la raíz de la rama en el fork.
 
 3. Haz commit y push:
    ```bash
-   git add io.github.JohnmaDev.ClockTimer.yaml
-   git commit -m "Add io.github.JohnmaDev.ClockTimer"
-   git push -u origin io.github.JohnmaDev.ClockTimer
+   git add io.github.JohnmaDev.Clock-Timer.yaml
+   git commit -m "Add io.github.JohnmaDev.Clock-Timer"
+   git push -u origin io.github.JohnmaDev.Clock-Timer
    ```
 
 ---
@@ -78,8 +78,8 @@ En tu computadora o directamente en la interfaz web de GitHub de tu fork:
 ### Paso 4: Abrir el Pull Request en Flathub
 1. Entra a [github.com/flathub/flathub/pulls](https://github.com/flathub/flathub/pulls).
 2. Haz clic en **New Pull Request**.
-3. Selecciona tu rama `JohnmaDev:io.github.JohnmaDev.ClockTimer` contra `flathub:new-pr` (o `flathub:master`).
-4. Ponle como título: `Add io.github.JohnmaDev.ClockTimer`.
+3. Selecciona tu rama `JohnmaDev:io.github.JohnmaDev.Clock-Timer` contra `flathub:new-pr` (o `flathub:master`).
+4. Ponle como título: `Add io.github.JohnmaDev.Clock-Timer`.
 5. En la descripción, explica brevemente:
    > *"Clock & Timer is an always-on-top, resizable floating clock and countdown timer widget with bilingual support and opacity controls."*
 
@@ -90,7 +90,7 @@ En tu computadora o directamente en la interfaz web de GitHub de tu fork:
 2. El bot te dejará un comentario con un enlace de prueba para instalar la versión preliminar.
 3. Un revisor humano de Flathub verificará que la licencia y el AppStream sean correctos.
 4. Cuando aprueben el Pull Request, crearán un repositorio oficial:
-   `https://github.com/flathub/io.github.JohnmaDev.ClockTimer`
+   `https://github.com/flathub/io.github.JohnmaDev.Clock-Timer`
    del cual serás el mantenedor oficial.
 
 ---
@@ -98,6 +98,6 @@ En tu computadora o directamente en la interfaz web de GitHub de tu fork:
 ### Paso 6: ¡En vivo para todo el mundo! 🎉
 Tu aplicación aparecerá indexada en [flathub.org](https://flathub.org) y cualquier persona en Linux podrá instalarla con:
 ```bash
-flatpak install flathub io.github.JohnmaDev.ClockTimer
+flatpak install flathub io.github.JohnmaDev.Clock-Timer
 ```
 o buscándola directamente en la tienda de apps de Ubuntu o Fedora.

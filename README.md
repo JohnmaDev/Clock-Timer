@@ -1,7 +1,7 @@
 # 🕒 Clock & Timer (Reloj & Temporizador Flotante)
 
 <p align="center">
-  <img src="assets/icons/io.github.JohnmaDev.ClockTimer.png" width="128" height="128" alt="Clock & Timer Logo" />
+  <img src="assets/icons/io.github.JohnmaDev.Clock-Timer.png" width="128" height="128" alt="Clock & Timer Logo" />
 </p>
 
 <p align="center">
@@ -90,16 +90,16 @@ python3 main.py
 
 #### Option 3: Add to Desktop Menu / Dock
 ```bash
-cp io.github.JohnmaDev.ClockTimer.desktop ~/.local/share/applications/
+cp io.github.JohnmaDev.Clock-Timer.desktop ~/.local/share/applications/
 ```
 
 ---
 
 ### 📦 Flatpak & Flathub
 This application follows official Freedesktop and Flathub packaging guidelines:
-- **App ID**: `io.github.JohnmaDev.ClockTimer`
-- **Metadata**: [io.github.JohnmaDev.ClockTimer.metainfo.xml](io.github.JohnmaDev.ClockTimer.metainfo.xml)
-- **Manifest**: [io.github.JohnmaDev.ClockTimer.yaml](io.github.JohnmaDev.ClockTimer.yaml)
+- **App ID**: `io.github.JohnmaDev.Clock-Timer`
+- **Metadata**: [io.github.JohnmaDev.Clock-Timer.metainfo.xml](io.github.JohnmaDev.Clock-Timer.metainfo.xml)
+- **Manifest**: [io.github.JohnmaDev.Clock-Timer.yaml](io.github.JohnmaDev.Clock-Timer.yaml)
 
 To publish or submit to Flathub, read the step-by-step guide in [FLATHUB.md](FLATHUB.md).
 
@@ -156,10 +156,10 @@ Clock-Timer/
 │   ├── icons/                          # Application icon (512x512 circular PNG)
 │   └── screenshots/                    # UI preview screenshots
 ├── FLATHUB.md                          # Complete Flathub submission guide
-├── io.github.JohnmaDev.ClockTimer.desktop     # FreeDesktop desktop entry
-├── io.github.JohnmaDev.ClockTimer.metainfo.xml# AppStream 1.0 metadata
-├── io.github.JohnmaDev.ClockTimer.png         # Standard App ID icon
-├── io.github.JohnmaDev.ClockTimer.yaml        # Flatpak build manifest
+├── io.github.JohnmaDev.Clock-Timer.desktop     # FreeDesktop desktop entry
+├── io.github.JohnmaDev.Clock-Timer.metainfo.xml# AppStream 1.0 metadata
+├── io.github.JohnmaDev.Clock-Timer.png         # Standard App ID icon
+├── io.github.JohnmaDev.Clock-Timer.yaml        # Flatpak build manifest
 ├── LICENSE                             # MIT License
 ├── main.py                             # Application entry point
 ├── README.md                           # Documentation

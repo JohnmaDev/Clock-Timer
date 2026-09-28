@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
 from app.window import FloatingClockTimerWindow
 
-APP_ID = "io.github.JohnmaDev.ClockTimer"
+APP_ID = "io.github.JohnmaDev.Clock-Timer"
 
 def get_app_icon():
     # 1. Intentar desde el tema del sistema (estándar FreeDesktop / Flatpak)
@@ -22,8 +22,8 @@ def get_app_icon():
     base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     candidates = [
         os.path.join(base_dir, "icon.png"),
-        os.path.join(base_dir, "io.github.JohnmaDev.ClockTimer.png"),
-        os.path.join(base_dir, "assets", "icons", "io.github.JohnmaDev.ClockTimer.png"),
+        os.path.join(base_dir, "io.github.JohnmaDev.Clock-Timer.png"),
+        os.path.join(base_dir, "assets", "icons", "io.github.JohnmaDev.Clock-Timer.png"),
         f"/app/share/icons/hicolor/512x512/apps/{APP_ID}.png",
         f"/usr/share/icons/hicolor/512x512/apps/{APP_ID}.png",
     ]

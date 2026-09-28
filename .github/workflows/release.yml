@@ -32,8 +32,8 @@ jobs:
       - name: Validate AppStream & Desktop Entries
         run: |
           sudo apt-get update && sudo apt-get install -y appstream desktop-file-utils
-          desktop-file-validate io.github.JohnmaDev.ClockTimer.desktop
-          appstreamcli validate --no-net io.github.JohnmaDev.ClockTimer.metainfo.xml
+          desktop-file-validate io.github.JohnmaDev.Clock-Timer.desktop
+          appstreamcli validate --no-net io.github.JohnmaDev.Clock-Timer.metainfo.xml
 
       - name: Build Standalone Binary with PyInstaller
         run: |
