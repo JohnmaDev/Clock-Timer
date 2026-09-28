@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QFont, QColor
 from .i18n import i18n
+from .draggable_widgets import DualActionLabel
 
 class TimeSetupDialog(QDialog):
     """Diálogo modal para configurar minutos y segundos con precisión."""
@@ -137,13 +138,12 @@ class TimerWidget(QWidget):
 
         normal_layout.addWidget(self.presets_widget)
 
-        # Pantalla con el tiempo restante
-        self.time_label = QLabel(self.view_normal)
+        # Pantalla con el tiempo restante (efecto dual: clic para configurar, arrastre para mover)
+        self.time_label = DualActionLabel("", self.view_normal, on_click=self.open_setup_dialog)
         self.time_label.setProperty("class", "TimeDisplay")
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.time_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.time_label.setToolTip("Haz clic para escribir el tiempo exacto")
-        self.time_label.mousePressEvent = self.open_setup_dialog
         normal_layout.addWidget(self.time_label)
 
         # Subtítulo de estado
@@ -195,13 +195,12 @@ class TimerWidget(QWidget):
         self.btn_mini_toggle.clicked.connect(self.toggle_timer)
         mini_layout.addWidget(self.btn_mini_toggle)
 
-        # Tiempo centrado
-        self.mini_time_label = QLabel(self.view_mini)
+        # Tiempo centrado (efecto dual: clic para pausar/reanudar, arrastre para mover)
+        self.mini_time_label = DualActionLabel("", self.view_mini, on_click=self.toggle_timer)
         self.mini_time_label.setProperty("class", "TimeDisplay")
         self.mini_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.mini_time_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mini_time_label.setToolTip("Clic para pausar / reanudar")
-        self.mini_time_label.mousePressEvent = lambda ev: self.toggle_timer()
         mini_layout.addWidget(self.mini_time_label, 1)
 
         # Botón Reset circular compacto
@@ -444,3 +443,10 @@ class TimerWidget(QWidget):
             font.setPointSize(font_size)
             font.setBold(True)
             self.time_label.setFont(font)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            win = self.window()
+            if hasattr(win, "start_window_drag"):
+                win.start_window_drag()
+        super().mousePressEvent(event)

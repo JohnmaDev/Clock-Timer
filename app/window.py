@@ -8,6 +8,7 @@ from PyQt6.QtGui import QCursor
 
 from .clock_widget import ClockWidget
 from .timer_widget import TimerWidget
+from .draggable_widgets import DraggableTabButton
 from .styles import MAIN_STYLE
 from .i18n import i18n
 
@@ -76,15 +77,15 @@ class FloatingClockTimerWindow(QWidget):
         title_layout.setContentsMargins(2, 2, 2, 2)
         title_layout.setSpacing(4)
 
-        # Botones para cambiar entre Reloj y Temporizador
-        self.btn_clock_tab = QPushButton("Reloj", self.title_bar)
+        # Botones para cambiar entre Reloj y Temporizador (con arrastre dual estilo GNOME)
+        self.btn_clock_tab = DraggableTabButton("Reloj", self.title_bar)
         self.btn_clock_tab.setProperty("class", "NavButton")
         self.btn_clock_tab.setCheckable(True)
         self.btn_clock_tab.setChecked(True)
         self.btn_clock_tab.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_clock_tab.clicked.connect(self.show_clock)
 
-        self.btn_timer_tab = QPushButton("Timer", self.title_bar)
+        self.btn_timer_tab = DraggableTabButton("Timer", self.title_bar)
         self.btn_timer_tab.setProperty("class", "NavButton")
         self.btn_timer_tab.setCheckable(True)
         self.btn_timer_tab.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -391,6 +392,14 @@ class FloatingClockTimerWindow(QWidget):
         self.setCursor(Qt.CursorShape.ArrowCursor)
         super().leaveEvent(event)
 
+    def start_window_drag(self):
+        """Inicia el arrastre nativo de la ventana del sistema (Wayland/X11/Windows)."""
+        handle = self.windowHandle()
+        if handle and hasattr(handle, "startSystemMove"):
+            if handle.startSystemMove():
+                return
+        self.old_pos = QCursor.pos()
+
     # --- Manejo de arrastre de la ventana y bordes de redimensionamiento ---
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -400,12 +409,9 @@ class FloatingClockTimerWindow(QWidget):
             if edge != Qt.Edge(0) and hasattr(self.windowHandle(), 'startSystemResize'):
                 # Redimensionamiento nativo del sistema
                 self.windowHandle().startSystemResize(edge)
-            elif pos.y() < 40 and hasattr(self.windowHandle(), 'startSystemMove'):
-                # Arrastre nativo del sistema desde la barra superior
-                self.windowHandle().startSystemMove()
             else:
-                # Arrastre manual por si la plataforma no soporta startSystemMove
-                self.old_pos = event.globalPosition().toPoint()
+                # Arrastre fluido desde cualquier parte libre o cabecera
+                self.start_window_drag()
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):

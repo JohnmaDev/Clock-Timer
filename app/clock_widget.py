@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QFont
 from .i18n import i18n
+from .draggable_widgets import DualActionLabel
 
 class ClockWidget(QWidget):
     """
@@ -24,12 +25,11 @@ class ClockWidget(QWidget):
         layout.setSpacing(4)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Etiqueta de la hora
-        self.time_label = QLabel(self)
+        # Etiqueta de la hora (con soporte dual: clic para alternar formato, arrastre para mover)
+        self.time_label = DualActionLabel("", self, on_click=self.toggle_format)
         self.time_label.setProperty("class", "TimeDisplay")
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.time_label.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.time_label.mousePressEvent = self.toggle_format
 
         # Etiqueta de la fecha
         self.date_label = QLabel(self)
@@ -118,5 +118,12 @@ class ClockWidget(QWidget):
             d_font = self.date_label.font()
             d_font.setPointSize(date_font_size)
             self.date_label.setFont(d_font)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            win = self.window()
+            if hasattr(win, "start_window_drag"):
+                win.start_window_drag()
+        super().mousePressEvent(event)
 
 
