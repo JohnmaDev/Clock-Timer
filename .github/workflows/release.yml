@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-linux:
-    name: Build Linux Executable
+    name: Build Linux Packages (Binary, AppImage, .deb, .rpm)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -31,7 +31,7 @@ jobs:
 
       - name: Validate AppStream & Desktop Entries
         run: |
-          sudo apt-get update && sudo apt-get install -y appstream desktop-file-utils
+          sudo apt-get update && sudo apt-get install -y appstream desktop-file-utils alien rpm
           desktop-file-validate io.github.JohnmaDev.Clock-Timer.desktop
           appstreamcli validate --no-net io.github.JohnmaDev.Clock-Timer.metainfo.xml
 
@@ -44,14 +44,55 @@ jobs:
             main.py
           chmod +x dist/Clock-Timer-Linux-x86_64
 
-      - name: Upload Linux Artifact
+      - name: Build Native Debian (.deb) Package
+        run: |
+          mkdir -p deb_dist/usr/bin deb_dist/usr/share/applications deb_dist/usr/share/icons/hicolor/512x512/apps deb_dist/DEBIAN
+          cp dist/Clock-Timer-Linux-x86_64 deb_dist/usr/bin/clock-timer
+          cp io.github.JohnmaDev.Clock-Timer.desktop deb_dist/usr/share/applications/
+          cp io.github.JohnmaDev.Clock-Timer.png deb_dist/usr/share/icons/hicolor/512x512/apps/
+          cat << 'EOF' > deb_dist/DEBIAN/control
+          Package: clock-timer
+          Version: 1.0.0
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Maintainer: JohnmaDev <jhonechavarria0506@gmail.com>
+          Description: Always-on-top floating clock and countdown timer widget
+           Clock & Timer is a modern, minimalist desktop widget designed to remain
+           perpetually visible over games, workspaces, and applications.
+          EOF
+          dpkg-deb --build deb_dist dist/Clock-Timer-1.0.0-amd64.deb
+
+      - name: Build RedHat / Fedora (.rpm) Package with Alien
+        run: |
+          alien --to-rpm --scripts dist/Clock-Timer-1.0.0-amd64.deb
+          mv *.rpm dist/ 2>/dev/null || true
+
+      - name: Build Universal Linux AppImage
+        run: |
+          curl -L -o appimagetool https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          mkdir -p AppDir/usr/bin AppDir/usr/share/icons/hicolor/512x512/apps
+          cp dist/Clock-Timer-Linux-x86_64 AppDir/usr/bin/clock-timer
+          cp io.github.JohnmaDev.Clock-Timer.desktop AppDir/
+          cp io.github.JohnmaDev.Clock-Timer.png AppDir/
+          cp io.github.JohnmaDev.Clock-Timer.png AppDir/usr/share/icons/hicolor/512x512/apps/
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          exec "$HERE/usr/bin/clock-timer" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          ./appimagetool --appimage-extract-and-run AppDir dist/Clock-Timer-1.0.0-x86_64.AppImage || true
+
+      - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Clock-Timer-Linux-x86_64
-          path: dist/Clock-Timer-Linux-x86_64
+          name: Linux-Packages
+          path: dist/*
 
   build-windows:
-    name: Build Windows Executable
+    name: Build Windows Executable (.exe)
     runs-on: windows-latest
     steps:
       - name: Checkout Code
@@ -71,17 +112,12 @@ jobs:
 
       - name: Build Standalone .exe with PyInstaller
         run: |
-          pyinstaller --onefile --windowed `
-            --name "Clock-Timer-Windows-x64" `
-            --icon "icon.png" `
-            --add-data "app;app" `
-            --add-data "icon.png;." `
-            main.py
+          pyinstaller --onefile --windowed --name "Clock-Timer-Windows-x64" --icon "icon.ico" --add-data "app;app" --add-data "icon.png;." main.py
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Clock-Timer-Windows-x64
+          name: Windows-Packages
           path: dist/Clock-Timer-Windows-x64.exe
 
   create-release:
@@ -93,24 +129,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Download Linux Artifact
+      - name: Download Linux Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: Clock-Timer-Linux-x86_64
+          name: Linux-Packages
           path: release-assets/
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Clock-Timer-Windows-x64
+          name: Windows-Packages
           path: release-assets/
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            release-assets/Clock-Timer-Linux-x86_64
-            release-assets/Clock-Timer-Windows-x64.exe
+          files: release-assets/*
           generate_release_notes: true
           draft: false
           prerelease: false
