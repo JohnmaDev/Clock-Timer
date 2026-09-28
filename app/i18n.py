@@ -1,0 +1,121 @@
+"""
+Módulo de Internacionalización (i18n) para soporte de Español e Inglés.
+Guarda la preferencia del usuario persistentemente con QSettings.
+"""
+from PyQt6.QtCore import QSettings
+
+TRANSLATIONS = {
+    "es": {
+        "tab_clock": "Reloj",
+        "tab_timer": "Timer",
+        "pin_on": "Siempre al frente (Activado)",
+        "pin_off": "Modo normal (no fijado)",
+        "opacity_btn": "Ajustar transparencia",
+        "opacity_lbl": "Opacidad:",
+        "settings_btn": "Ajustes de idioma",
+        "minimize": "Minimizar",
+        "close": "Cerrar",
+        "title_tooltip": "Arrastra para mover • Rueda del mouse para ajustar opacidad",
+        "resize_tooltip": "Arrastra aquí para cambiar el tamaño",
+        "clock_click_tooltip": "Haz clic para alternar entre formato 24h y 12h",
+        "clock_24h_hint": "Formato 24h (clic para cambiar)",
+        "clock_12h_hint": "Formato 12h AM/PM (clic para cambiar)",
+        "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+        "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+        "timer_click_tooltip": "Haz clic para escribir el tiempo exacto",
+        "timer_hint_idle": "Clic en números para configurar",
+        "timer_hint_running": "En progreso...",
+        "timer_hint_paused": "En pausa",
+        "timer_hint_finished": "¡Tiempo finalizado!",
+        "timer_hint_ready": "Listo",
+        "btn_start": "▶ Iniciar",
+        "btn_pause": "⏸ Pausar",
+        "btn_resume": "▶ Reanudar",
+        "btn_reset": "↺ Reiniciar",
+        "notif_title": "⏰ ¡Temporizador!",
+        "notif_msg": "El tiempo ha llegado a su fin.",
+        "dialog_title": "Configurar Temporizador",
+        "dialog_min": "Minutos:",
+        "dialog_sec": "Segundos:",
+        "lang_label": "🌐 Idioma:"
+    },
+    "en": {
+        "tab_clock": "Clock",
+        "tab_timer": "Timer",
+        "pin_on": "Always on top (Enabled)",
+        "pin_off": "Normal mode (unpinned)",
+        "opacity_btn": "Adjust transparency",
+        "opacity_lbl": "Opacity:",
+        "settings_btn": "Language settings",
+        "minimize": "Minimize",
+        "close": "Close",
+        "title_tooltip": "Drag to move • Mouse wheel to adjust opacity",
+        "resize_tooltip": "Drag here to resize",
+        "clock_click_tooltip": "Click to toggle between 24h and 12h format",
+        "clock_24h_hint": "24h format (click to toggle)",
+        "clock_12h_hint": "12h format AM/PM (click to toggle)",
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        "timer_click_tooltip": "Click to set exact time",
+        "timer_hint_idle": "Click numbers to configure",
+        "timer_hint_running": "In progress...",
+        "timer_hint_paused": "Paused",
+        "timer_hint_finished": "Time is up!",
+        "timer_hint_ready": "Ready",
+        "btn_start": "▶ Start",
+        "btn_pause": "⏸ Pause",
+        "btn_resume": "▶ Resume",
+        "btn_reset": "↺ Reset",
+        "notif_title": "⏰ Timer!",
+        "notif_msg": "Time has run out.",
+        "dialog_title": "Set Timer",
+        "dialog_min": "Minutes:",
+        "dialog_sec": "Seconds:",
+        "lang_label": "🌐 Lang:"
+    }
+
+}
+
+class I18nManager:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._init()
+        return cls._instance
+
+    def _init(self):
+        self.settings = QSettings("RelojFlotante", "Settings")
+        # Idioma por defecto: español ('es')
+        self.current_lang = self.settings.value("language", "es")
+        if self.current_lang not in ("es", "en"):
+            self.current_lang = "es"
+        self._listeners = []
+
+    def get_lang(self):
+        return self.current_lang
+
+    def set_lang(self, lang):
+        if lang in ("es", "en") and lang != self.current_lang:
+            self.current_lang = lang
+            self.settings.setValue("language", lang)
+            # Notificar a los widgets suscritos para que se actualicen en vivo
+            for listener in self._listeners:
+                try:
+                    listener()
+                except Exception:
+                    pass
+
+    def t(self, key):
+        """Retorna la traducción para la clave solicitada en el idioma actual."""
+        lang_dict = TRANSLATIONS.get(self.current_lang, TRANSLATIONS["es"])
+        return lang_dict.get(key, key)
+
+    def subscribe(self, callback):
+        """Permite a los componentes suscribirse al cambio de idioma."""
+        if callback not in self._listeners:
+            self._listeners.append(callback)
+
+# Instancia global única
+i18n = I18nManager()

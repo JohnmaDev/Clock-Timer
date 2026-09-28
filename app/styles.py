@@ -1,0 +1,253 @@
+"""
+Estilos modernos (QSS) para el widget de Reloj y Temporizador flotante.
+Diseño oscuro minimalista con esquinas redondeadas y acentos visuales vibrantes.
+"""
+
+MAIN_STYLE = """
+/* Ventana principal */
+QWidget#MainContainer {
+    background-color: #141419;
+    border: 1.5px solid #2a2a35;
+    border-radius: 16px;
+}
+
+/* Barra superior de control / arrastre */
+QWidget#TitleBar {
+    background-color: transparent;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+/* Botones de navegación (Reloj / Timer) */
+QPushButton.NavButton {
+    background-color: transparent;
+    color: #9292a8;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+}
+
+QPushButton.NavButton:hover {
+    color: #ffffff;
+    background-color: #242432;
+}
+
+QPushButton.NavButton:checked {
+    color: #00d2ff;
+    background-color: #172233;
+    border: 1px solid #00d2ff44;
+}
+
+/* Botones de control de ventana (Pin, Minimizar, Cerrar) */
+QPushButton.WindowControl {
+    background-color: transparent;
+    color: #8a8a9e;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    padding: 2px;
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+QPushButton.WindowControl:hover {
+    color: #ffffff;
+    background-color: #2b2b38;
+}
+
+QPushButton.WindowControl#CloseButton:hover {
+    background-color: #e63946;
+    color: #ffffff;
+}
+
+QPushButton.WindowControl#PinButton:checked,
+QPushButton.WindowControl#OpacityButton:checked,
+QPushButton.WindowControl#SettingsButton:checked {
+    color: #00d2ff;
+    background-color: #1b263b;
+    border: 1px solid #00d2ff55;
+}
+
+
+
+
+/* Textos principales */
+QLabel.TimeDisplay {
+    color: #ffffff;
+    font-family: 'Monospace', 'Consolas', 'Courier New', 'DejaVu Sans Mono';
+    font-weight: 700;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel.DateDisplay {
+    color: #82829b;
+    font-size: 12px;
+    font-weight: 500;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel.SecondaryText {
+    color: #6b6b80;
+    font-size: 11px;
+    qproperty-alignment: AlignCenter;
+}
+
+/* Botones de acción del temporizador */
+QPushButton.PrimaryAction {
+    background-color: #00d2ff;
+    color: #0c1017;
+    font-weight: 700;
+    font-size: 13px;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+}
+
+QPushButton.PrimaryAction:hover {
+    background-color: #38e1ff;
+}
+
+QPushButton.PrimaryAction:pressed {
+    background-color: #00b4db;
+}
+
+QPushButton.SecondaryAction {
+    background-color: #22222e;
+    color: #d1d1e0;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid #333344;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+QPushButton.SecondaryAction:hover {
+    background-color: #2d2d3d;
+    color: #ffffff;
+}
+
+/* Botones rápidos de preajustes (+1m, +5m, etc.) */
+QPushButton.PresetButton {
+    background-color: #1a1a24;
+    color: #9d9db5;
+    border: 1px solid #282837;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 6px;
+}
+
+QPushButton.PresetButton:hover {
+    background-color: #272738;
+    color: #00d2ff;
+    border-color: #00d2ff;
+}
+
+/* Barra de control de opacidad */
+QWidget#OpacityBar {
+    background-color: #1a1a26;
+    border: 1px solid #2b2b3d;
+    border-radius: 8px;
+    padding: 3px 8px;
+}
+
+QLabel#OpacityLabel {
+    color: #9d9db5;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QLabel#OpacityValue {
+    color: #00d2ff;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Monospace', 'Consolas', 'DejaVu Sans Mono';
+    min-width: 32px;
+}
+
+QPushButton.OpacityPreset {
+    background-color: #242436;
+    color: #a0a0b8;
+    border: 1px solid #333348;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+}
+
+QPushButton.OpacityPreset:hover {
+    background-color: #00d2ff;
+    color: #0d0d14;
+    border-color: #00d2ff;
+}
+
+/* Barra de ajustes / configuración de idioma */
+QWidget#SettingsBar {
+    background-color: #1a1a26;
+    border: 1px solid #2b2b3d;
+    border-radius: 8px;
+    padding: 3px 8px;
+}
+
+QLabel#SettingsLabel {
+    color: #9d9db5;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QPushButton.LangButton {
+    background-color: #242436;
+    color: #a0a0b8;
+    border: 1px solid #333348;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+}
+
+
+QPushButton.LangButton:hover {
+    background-color: #2d2d42;
+    color: #ffffff;
+}
+
+QPushButton.LangButton:checked {
+    background-color: #00d2ff;
+    color: #0c1017;
+    border-color: #00d2ff;
+    font-weight: 700;
+}
+
+/* Control deslizante de opacidad / settings */
+QSlider::groove:horizontal {
+    height: 4px;
+    background: #252533;
+    border-radius: 2px;
+}
+
+
+QSlider::sub-page:horizontal {
+    background: #00d2ff;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: #ffffff;
+    width: 12px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+    border-radius: 6px;
+}
+
+/* Grip de redimensionamiento */
+QSizeGrip {
+    width: 16px;
+    height: 16px;
+    background: transparent;
+}
+"""
+

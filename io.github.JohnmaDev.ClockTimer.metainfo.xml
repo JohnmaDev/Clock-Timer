@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.JohnmaDev.ClockTimer</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Clock &amp; Timer</name>
+  <name xml:lang="es">Reloj &amp; Temporizador</name>
+  <summary>Always-on-top floating clock and countdown timer widget</summary>
+  <summary xml:lang="es">Widget flotante de reloj y temporizador siempre visible</summary>
+  
+  <description>
+    <p>
+      Clock &amp; Timer is a modern, minimalist desktop widget designed to remain perpetually visible over any application, game, or workspace without getting buried in the background.
+    </p>
+    <p xml:lang="es">
+      Reloj &amp; Temporizador es un widget de escritorio moderno y minimalista diseñado para mantenerse siempre visible por encima de cualquier aplicación, juego o espacio de trabajo sin perderse en segundo plano.
+    </p>
+    <ul>
+      <li>Always-on-top mode (pin icon) keeps time in sight at all times</li>
+      <li>Compact, frameless, and freely resizable window with dynamic typography scaling</li>
+      <li>Clock mode with 12-hour and 24-hour formats plus full localized date</li>
+      <li>Countdown timer with instant presets (+1m, +5m, +10m, +25m Pomodoro) and precise custom configuration</li>
+      <li>Auditory alarm, visual flashing indicator, and native desktop notifications upon timer completion</li>
+      <li>Intuitive opacity control via quick slider bar and instant mouse wheel scrolling</li>
+      <li>Full bilingual English and Spanish localization with persistent settings</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.JohnmaDev.ClockTimer.desktop</launchable>
+
+  <url type="homepage">https://github.com/JohnmaDev/Clock-Timer</url>
+  <url type="bugtracker">https://github.com/JohnmaDev/Clock-Timer/issues</url>
+  <url type="vcs-browser">https://github.com/JohnmaDev/Clock-Timer</url>
+
+  <developer id="io.github.johnmadev">
+    <name>JohnmaDev</name>
+  </developer>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/JohnmaDev/Clock-Timer/main/assets/screenshots/preview_clock.png</image>
+      <caption>Clock view in dark minimalist mode</caption>
+      <caption xml:lang="es">Vista de reloj en modo oscuro minimalista</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/JohnmaDev/Clock-Timer/main/assets/screenshots/preview_timer_en.png</image>
+      <caption>Countdown timer with presets and Pomodoro shortcut</caption>
+      <caption xml:lang="es">Temporizador con preajustes rápidos y acceso a Pomodoro</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/JohnmaDev/Clock-Timer/main/assets/screenshots/preview_opacity_control.png</image>
+      <caption>Adjustable opacity slider</caption>
+      <caption xml:lang="es">Barra deslizante de ajuste de opacidad</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1.0.0" date="2026-09-27">
+      <description>
+        <p>Initial release of Clock &amp; Timer:</p>
+        <ul>
+          <li>Always-on-top floating dialog widget with resize support</li>
+          <li>Responsive 12h/24h clock with localized calendar date</li>
+          <li>Countdown timer with presets, audio alerts, and native desktop notifications</li>
+          <li>Interactive opacity slider and mouse wheel brightness adjustment</li>
+          <li>Bilingual English and Spanish support</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1" />
+
+  <categories>
+    <category>Utility</category>
+    <category>Clock</category>
+    <category>Qt</category>
+  </categories>
+</component>

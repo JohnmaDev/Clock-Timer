@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Clock & Timer
+Name[es]=Reloj y Temporizador
+GenericName=Floating Clock and Timer
+GenericName[es]=Reloj y Temporizador Flotante
+Comment=Always-on-top floating clock and countdown timer widget
+Comment[es]=Widget flotante de reloj y temporizador siempre visible
+Exec=clock-timer
+Icon=io.github.JohnmaDev.ClockTimer
+Terminal=false
+Categories=Utility;Clock;Qt;
+StartupNotify=true
+StartupWMClass=ClockTimer
+Keywords=clock;timer;stopwatch;countdown;always-on-top;pomodoro;reloj;temporizador;flotante;cuenta-regresiva;
