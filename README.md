@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue.svg?style=flat-square" alt="Platform Support">
   <img src="https://img.shields.io/badge/Python-3.10%2B-yellow.svg?style=flat-square" alt="Python Version">
   <img src="https://img.shields.io/badge/GUI-PyQt6-blueviolet.svg?style=flat-square" alt="PyQt6">
-  <a href="FLATHUB.md"><img src="https://img.shields.io/badge/Flatpak-Flathub%20Ready-4a90e2.svg?style=flat-square" alt="Flathub Ready"></a>
+  <a href="https://github.com/flathub/flathub/pull/10413"><img src="https://img.shields.io/badge/Flatpak-Flathub%20PR%20%2310413-4a90e2.svg?style=flat-square" alt="Flathub PR #10413"></a>
 </p>
 
 ---
@@ -101,7 +101,7 @@ This application follows official Freedesktop and Flathub packaging guidelines:
 - **Metadata**: [io.github.JohnmaDev.Clock-Timer.metainfo.xml](io.github.JohnmaDev.Clock-Timer.metainfo.xml)
 - **Manifest**: [io.github.JohnmaDev.Clock-Timer.yaml](io.github.JohnmaDev.Clock-Timer.yaml)
 
-To publish or submit to Flathub, read the step-by-step guide in [FLATHUB.md](FLATHUB.md).
+To track the official review and approval progress, visit Flathub PR [#10413](https://github.com/flathub/flathub/pull/10413).
 
 ---
 
@@ -155,7 +155,6 @@ Clock-Timer/
 │   ├── branding/                       # Design concepts & exploration artwork
 │   ├── icons/                          # Application icon (512x512 circular PNG)
 │   └── screenshots/                    # UI preview screenshots
-├── FLATHUB.md                          # Complete Flathub submission guide
 ├── io.github.JohnmaDev.Clock-Timer.desktop     # FreeDesktop desktop entry
 ├── io.github.JohnmaDev.Clock-Timer.metainfo.xml# AppStream 1.0 metadata
 ├── io.github.JohnmaDev.Clock-Timer.png         # Standard App ID icon
