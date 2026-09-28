@@ -55,6 +55,19 @@
   </screenshots>
 
   <releases>
+    <release version="1.1.0" date="2026-09-27">
+      <description>
+        <p>Mini-HUD Focus Mode and Timer Enhancements:</p>
+        <ul>
+          <li>New ultra-compact Mini-HUD (Focus Mode) with integrated horizontal controls</li>
+          <li>Dynamic font autoscaling for multi-hour displays</li>
+          <li>New +1h quick preset button alongside +1m, +5m, +15m, and +25m</li>
+          <li>New dedicated Clear (Trash) button to reset time to 00:00 instantly</li>
+          <li>Default starting countdown set to 00:00</li>
+          <li>Redesigned minimalist 4-button header with unified collapsible Settings panel</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-09-27">
       <description>
         <p>Initial release of Clock &amp; Timer:</p>

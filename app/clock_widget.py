@@ -85,23 +85,38 @@ class ClockWidget(QWidget):
         self.time_label.setText(time_str)
         self.date_label.setText(date_str)
 
+    def set_mini_mode(self, enabled: bool):
+        self.is_mini_mode = enabled
+        self.date_label.setVisible(not enabled)
+        self.format_indicator.setVisible(not enabled)
+        if enabled:
+            self.layout().setContentsMargins(4, 2, 4, 2)
+        else:
+            self.layout().setContentsMargins(10, 10, 10, 10)
+        self.update_time()
+        self.resizeEvent(None)
+
     def resizeEvent(self, event):
         """Ajusta proporcionalmente el tamaño de fuente según el tamaño de la ventana."""
-        super().resizeEvent(event)
-        # Calcula un tamaño de fuente dinámico basado en el ancho y alto del widget
+        if event is not None:
+            super().resizeEvent(event)
         w = self.width()
         h = self.height()
-        base_size = min(w, h)
-        font_size = max(18, min(36, int(base_size / 6.8)))
+        if getattr(self, "is_mini_mode", False):
+            font_size = max(20, min(42, int(h * 0.55)))
+        else:
+            base_size = min(w, h)
+            font_size = max(18, min(36, int(base_size / 6.8)))
 
         font = self.time_label.font()
         font.setPointSize(font_size)
         font.setBold(True)
         self.time_label.setFont(font)
 
-        date_font_size = max(10, int(font_size / 2.6))
-        d_font = self.date_label.font()
-        d_font.setPointSize(date_font_size)
-        self.date_label.setFont(d_font)
+        if not getattr(self, "is_mini_mode", False):
+            date_font_size = max(10, int(font_size / 2.6))
+            d_font = self.date_label.font()
+            d_font.setPointSize(date_font_size)
+            self.date_label.setFont(d_font)
 
 

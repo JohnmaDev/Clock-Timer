@@ -46,13 +46,17 @@ jobs:
 
       - name: Build Native Debian (.deb) Package
         run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -z "$VERSION" ] || [ "$VERSION" = "main" ]; then
+            VERSION="1.1.0"
+          fi
           mkdir -p deb_dist/usr/bin deb_dist/usr/share/applications deb_dist/usr/share/icons/hicolor/512x512/apps deb_dist/DEBIAN
           cp dist/Clock-Timer-Linux-x86_64 deb_dist/usr/bin/clock-timer
           cp io.github.JohnmaDev.Clock-Timer.desktop deb_dist/usr/share/applications/
           cp io.github.JohnmaDev.Clock-Timer.png deb_dist/usr/share/icons/hicolor/512x512/apps/
-          cat << 'EOF' > deb_dist/DEBIAN/control
+          cat << EOF > deb_dist/DEBIAN/control
           Package: clock-timer
-          Version: 1.0.0
+          Version: ${VERSION}
           Section: utils
           Priority: optional
           Architecture: amd64
@@ -61,15 +65,23 @@ jobs:
            Clock & Timer is a modern, minimalist desktop widget designed to remain
            perpetually visible over games, workspaces, and applications.
           EOF
-          dpkg-deb --build deb_dist dist/Clock-Timer-1.0.0-amd64.deb
+          dpkg-deb --build deb_dist "dist/Clock-Timer-${VERSION}-amd64.deb"
 
       - name: Build RedHat / Fedora (.rpm) Package with Alien
         run: |
-          alien --to-rpm --scripts dist/Clock-Timer-1.0.0-amd64.deb
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -z "$VERSION" ] || [ "$VERSION" = "main" ]; then
+            VERSION="1.1.0"
+          fi
+          alien --to-rpm --scripts "dist/Clock-Timer-${VERSION}-amd64.deb"
           mv *.rpm dist/ 2>/dev/null || true
 
       - name: Build Universal Linux AppImage
         run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -z "$VERSION" ] || [ "$VERSION" = "main" ]; then
+            VERSION="1.1.0"
+          fi
           curl -L -o appimagetool https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
           chmod +x appimagetool
           mkdir -p AppDir/usr/bin AppDir/usr/share/icons/hicolor/512x512/apps
@@ -83,7 +95,7 @@ jobs:
           exec "$HERE/usr/bin/clock-timer" "$@"
           EOF
           chmod +x AppDir/AppRun
-          ./appimagetool --appimage-extract-and-run AppDir dist/Clock-Timer-1.0.0-x86_64.AppImage || true
+          ./appimagetool --appimage-extract-and-run AppDir "dist/Clock-Timer-${VERSION}-x86_64.AppImage" || true
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4

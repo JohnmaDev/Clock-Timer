@@ -29,6 +29,7 @@ class FloatingClockTimerWindow(QWidget):
         super().__init__()
         self.always_on_top = True
         self.old_pos = None
+        self.is_mini_mode = False
 
         self.init_window_flags()
         self.init_ui()
@@ -93,6 +94,13 @@ class FloatingClockTimerWindow(QWidget):
         title_layout.addWidget(self.btn_timer_tab)
         title_layout.addStretch()
 
+        # Botón Modo Mini-HUD / Enfoque (en normal muestra ↙ para compactar)
+        self.btn_mini_hud = QPushButton("↙", self.title_bar)
+        self.btn_mini_hud.setProperty("class", "WindowControl")
+        self.btn_mini_hud.setObjectName("MiniHudButton")
+        self.btn_mini_hud.clicked.connect(self.toggle_mini_hud)
+        title_layout.addWidget(self.btn_mini_hud)
+
         # Botón Pin (Always on top toggle)
         self.btn_pin = QPushButton("📌", self.title_bar)
         self.btn_pin.setProperty("class", "WindowControl")
@@ -103,28 +111,13 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_pin.clicked.connect(self.toggle_pin)
         title_layout.addWidget(self.btn_pin)
 
-        # Botón Opacidad / Transparencia
-        self.btn_opacity = QPushButton("◐", self.title_bar)
-        self.btn_opacity.setProperty("class", "WindowControl")
-        self.btn_opacity.setObjectName("OpacityButton")
-        self.btn_opacity.setCheckable(True)
-        self.btn_opacity.clicked.connect(self.toggle_opacity_bar)
-        title_layout.addWidget(self.btn_opacity)
-
-        # Botón Ajustes de Idioma
+        # Botón Ajustes (Opacidad e Idioma unificados)
         self.btn_settings = QPushButton("⚙", self.title_bar)
         self.btn_settings.setProperty("class", "WindowControl")
         self.btn_settings.setObjectName("SettingsButton")
         self.btn_settings.setCheckable(True)
-        self.btn_settings.clicked.connect(self.toggle_settings_bar)
+        self.btn_settings.clicked.connect(self.toggle_settings_panel)
         title_layout.addWidget(self.btn_settings)
-
-        # Botón Minimizar
-        self.btn_min = QPushButton("—", self.title_bar)
-        self.btn_min.setProperty("class", "WindowControl")
-        self.btn_min.clicked.connect(self.showMinimized)
-        title_layout.addWidget(self.btn_min)
-
 
         # Botón Cerrar
         self.btn_close = QPushButton("✕", self.title_bar)
@@ -136,75 +129,74 @@ class FloatingClockTimerWindow(QWidget):
 
         container_layout.addWidget(self.title_bar)
 
-        # 2. Barra deslizable de Opacidad (control visual de transparencia)
-        self.opacity_bar = QWidget(self.container)
-        self.opacity_bar.setObjectName("OpacityBar")
-        self.opacity_bar.hide()  # Inicialmente oculta, se abre con el botón ◐
-        op_layout = QHBoxLayout(self.opacity_bar)
-        op_layout.setContentsMargins(4, 2, 4, 2)
-        op_layout.setSpacing(6)
+        # 2. Panel desplegable unificado de Ajustes (Opacidad e Idioma)
+        self.settings_panel = QWidget(self.container)
+        self.settings_panel.setObjectName("SettingsPanel")
+        self.settings_panel.hide()
 
-        self.lbl_op = QLabel(self.opacity_bar)
+        panel_layout = QVBoxLayout(self.settings_panel)
+        panel_layout.setContentsMargins(8, 6, 8, 6)
+        panel_layout.setSpacing(6)
+
+        # Fila 1: Control de Opacidad
+        op_row = QHBoxLayout()
+        op_row.setSpacing(6)
+        self.lbl_op = QLabel(self.settings_panel)
         self.lbl_op.setObjectName("OpacityLabel")
 
-        self.opacity_slider = QSlider(Qt.Orientation.Horizontal, self.opacity_bar)
+        self.opacity_slider = QSlider(Qt.Orientation.Horizontal, self.settings_panel)
         self.opacity_slider.setRange(30, 100)
         self.opacity_slider.setValue(100)
         self.opacity_slider.valueChanged.connect(self.on_opacity_slider_changed)
 
-        self.lbl_opacity_value = QLabel("100%", self.opacity_bar)
+        self.lbl_opacity_value = QLabel("100%", self.settings_panel)
         self.lbl_opacity_value.setObjectName("OpacityValue")
 
-        btn_p50 = QPushButton("50%", self.opacity_bar)
+        btn_p50 = QPushButton("50%", self.settings_panel)
         btn_p50.setProperty("class", "OpacityPreset")
         btn_p50.clicked.connect(lambda: self.opacity_slider.setValue(50))
 
-        btn_p75 = QPushButton("75%", self.opacity_bar)
+        btn_p75 = QPushButton("75%", self.settings_panel)
         btn_p75.setProperty("class", "OpacityPreset")
         btn_p75.clicked.connect(lambda: self.opacity_slider.setValue(75))
 
-        btn_p100 = QPushButton("100%", self.opacity_bar)
+        btn_p100 = QPushButton("100%", self.settings_panel)
         btn_p100.setProperty("class", "OpacityPreset")
         btn_p100.clicked.connect(lambda: self.opacity_slider.setValue(100))
 
-        op_layout.addWidget(self.lbl_op)
-        op_layout.addWidget(self.opacity_slider, 1)
-        op_layout.addWidget(self.lbl_opacity_value)
-        op_layout.addWidget(btn_p50)
-        op_layout.addWidget(btn_p75)
-        op_layout.addWidget(btn_p100)
+        op_row.addWidget(self.lbl_op)
+        op_row.addWidget(self.opacity_slider, 1)
+        op_row.addWidget(self.lbl_opacity_value)
+        op_row.addWidget(btn_p50)
+        op_row.addWidget(btn_p75)
+        op_row.addWidget(btn_p100)
+        panel_layout.addLayout(op_row)
 
-        container_layout.addWidget(self.opacity_bar)
-
-        # 3. Barra de Ajustes de Idioma (Español / Inglés)
-        self.settings_bar = QWidget(self.container)
-        self.settings_bar.setObjectName("SettingsBar")
-        self.settings_bar.hide()
-        set_layout = QHBoxLayout(self.settings_bar)
-        set_layout.setContentsMargins(6, 2, 6, 2)
-        set_layout.setSpacing(6)
-
-        self.lbl_lang_setting = QLabel(self.settings_bar)
+        # Fila 2: Idioma
+        lang_row = QHBoxLayout()
+        lang_row.setSpacing(6)
+        self.lbl_lang_setting = QLabel(self.settings_panel)
         self.lbl_lang_setting.setObjectName("SettingsLabel")
 
-        self.btn_lang_es = QPushButton("Español", self.settings_bar)
+        self.btn_lang_es = QPushButton("Español", self.settings_panel)
         self.btn_lang_es.setProperty("class", "LangButton")
         self.btn_lang_es.setCheckable(True)
         self.btn_lang_es.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_lang_es.clicked.connect(lambda: self.switch_language("es"))
 
-        self.btn_lang_en = QPushButton("English", self.settings_bar)
+        self.btn_lang_en = QPushButton("English", self.settings_panel)
         self.btn_lang_en.setProperty("class", "LangButton")
         self.btn_lang_en.setCheckable(True)
         self.btn_lang_en.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_lang_en.clicked.connect(lambda: self.switch_language("en"))
 
-        set_layout.addWidget(self.lbl_lang_setting)
-        set_layout.addStretch()
-        set_layout.addWidget(self.btn_lang_es)
-        set_layout.addWidget(self.btn_lang_en)
+        lang_row.addWidget(self.lbl_lang_setting)
+        lang_row.addStretch()
+        lang_row.addWidget(self.btn_lang_es)
+        lang_row.addWidget(self.btn_lang_en)
+        panel_layout.addLayout(lang_row)
 
-        container_layout.addWidget(self.settings_bar)
+        container_layout.addWidget(self.settings_panel)
 
         # 4. Pila de contenido (Reloj o Temporizador)
         self.stack = QStackedWidget(self.container)
@@ -258,6 +250,57 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_timer_tab.setChecked(True)
         self.stack.setCurrentWidget(self.timer_widget)
 
+    def toggle_mini_hud(self):
+        """Alterna entre el Modo Normal y el Modo Mini-HUD / Enfoque compacto."""
+        self.is_mini_mode = not getattr(self, "is_mini_mode", False)
+        if self.is_mini_mode:
+            self.saved_geometry = self.geometry()
+
+            # Ocultar controles de la vista completa
+            self.btn_clock_tab.hide()
+            self.btn_timer_tab.hide()
+            self.btn_pin.hide()
+            self.btn_settings.hide()
+            self.settings_panel.hide()
+            self.size_grip.hide()
+
+            # En modo mini: flecha ↗ para expandir y volver al tamaño normal
+            self.btn_mini_hud.setText("↗")
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_expand"))
+
+            self.timer_widget.set_mini_mode(True)
+            self.clock_widget.set_mini_mode(True)
+
+            self.title_bar.layout().setContentsMargins(4, 2, 4, 0)
+            self.container.layout().setContentsMargins(6, 2, 6, 4)
+            self.container.layout().setSpacing(0)
+
+            self.setMinimumSize(210, 68)
+            self.resize(240, 75)
+        else:
+            self.btn_clock_tab.show()
+            self.btn_timer_tab.show()
+            self.btn_pin.show()
+            self.btn_settings.show()
+            self.size_grip.show()
+
+            # En modo normal: flecha ↙ para contraer al modo mini
+            self.btn_mini_hud.setText("↙")
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_shrink"))
+
+            self.timer_widget.set_mini_mode(False)
+            self.clock_widget.set_mini_mode(False)
+
+            self.title_bar.layout().setContentsMargins(2, 2, 2, 2)
+            self.container.layout().setContentsMargins(10, 8, 10, 8)
+            self.container.layout().setSpacing(4)
+
+            self.setMinimumSize(210, 185)
+            if hasattr(self, "saved_geometry"):
+                self.setGeometry(self.saved_geometry)
+            else:
+                self.resize(285, 255)
+
     def toggle_pin(self):
         """Alterna el modo 'Siempre al frente' (Always on top)."""
         self.always_on_top = self.btn_pin.isChecked()
@@ -281,22 +324,10 @@ class FloatingClockTimerWindow(QWidget):
         if self.always_on_top:
             self.raise_()
 
-
-    def toggle_opacity_bar(self):
-        """Muestra u oculta la barra visual de ajuste de opacidad."""
-        is_visible = self.btn_opacity.isChecked()
-        self.opacity_bar.setVisible(is_visible)
-        if is_visible and self.btn_settings.isChecked():
-            self.btn_settings.setChecked(False)
-            self.settings_bar.hide()
-
-    def toggle_settings_bar(self):
-        """Muestra u oculta la barra de configuración de idioma."""
+    def toggle_settings_panel(self):
+        """Muestra u oculta el panel unificado de ajustes (Opacidad e Idioma)."""
         is_visible = self.btn_settings.isChecked()
-        self.settings_bar.setVisible(is_visible)
-        if is_visible and self.btn_opacity.isChecked():
-            self.btn_opacity.setChecked(False)
-            self.opacity_bar.hide()
+        self.settings_panel.setVisible(is_visible)
 
     def switch_language(self, lang):
         """Cambia el idioma global de la aplicación."""
@@ -312,14 +343,17 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_clock_tab.setText(i18n.t("tab_clock"))
         self.btn_timer_tab.setText(i18n.t("tab_timer"))
 
+        if getattr(self, "is_mini_mode", False):
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_expand"))
+        else:
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_shrink"))
+
         if self.always_on_top:
             self.btn_pin.setToolTip(i18n.t("pin_on"))
         else:
             self.btn_pin.setToolTip(i18n.t("pin_off"))
 
-        self.btn_opacity.setToolTip(i18n.t("opacity_btn"))
         self.btn_settings.setToolTip(i18n.t("settings_btn"))
-        self.btn_min.setToolTip(i18n.t("minimize"))
         self.btn_close.setToolTip(i18n.t("close"))
 
         self.lbl_op.setText(i18n.t("opacity_lbl"))
@@ -445,6 +479,9 @@ class FloatingClockTimerWindow(QWidget):
             # Barra espaciadora inicia/pausa el temporizador si estamos en esa vista
             if self.stack.currentWidget() == self.timer_widget:
                 self.timer_widget.toggle_timer()
+        elif event.key() in (Qt.Key.Key_M, Qt.Key.Key_F):
+            # 'M' (Mini) o 'F' (Focus) para alternar Modo Mini-HUD
+            self.toggle_mini_hud()
         super().keyPressEvent(event)
 
 

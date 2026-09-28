@@ -40,23 +40,23 @@ QPushButton.NavButton:checked {
     border: 1px solid #00d2ff44;
 }
 
-/* Botones de control de ventana (Pin, Minimizar, Cerrar) */
+/* Botones de control de ventana (Mini-HUD, Pin, Ajustes, Cerrar) */
 QPushButton.WindowControl {
     background-color: transparent;
-    color: #8a8a9e;
+    color: #9292a8;
     border: none;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 13px;
     padding: 2px;
-    min-width: 20px;
-    max-width: 20px;
-    min-height: 20px;
-    max-height: 20px;
+    min-width: 24px;
+    max-width: 24px;
+    min-height: 24px;
+    max-height: 24px;
 }
 
 QPushButton.WindowControl:hover {
     color: #ffffff;
-    background-color: #2b2b38;
+    background-color: #242432;
 }
 
 QPushButton.WindowControl#CloseButton:hover {
@@ -65,11 +65,15 @@ QPushButton.WindowControl#CloseButton:hover {
 }
 
 QPushButton.WindowControl#PinButton:checked,
-QPushButton.WindowControl#OpacityButton:checked,
 QPushButton.WindowControl#SettingsButton:checked {
     color: #00d2ff;
-    background-color: #1b263b;
+    background-color: #172233;
     border: 1px solid #00d2ff55;
+}
+
+QPushButton.WindowControl#MiniHudButton:hover {
+    color: #00d2ff;
+    background-color: #172233;
 }
 
 
@@ -130,6 +134,18 @@ QPushButton.SecondaryAction:hover {
     color: #ffffff;
 }
 
+QPushButton.PrimaryAction[mini="true"] {
+    padding: 3px 10px;
+    font-size: 11px;
+    border-radius: 6px;
+}
+
+QPushButton.SecondaryAction[mini="true"] {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+}
+
 /* Botones rápidos de preajustes (+1m, +5m, etc.) */
 QPushButton.PresetButton {
     background-color: #1a1a24;
@@ -185,12 +201,12 @@ QPushButton.OpacityPreset:hover {
     border-color: #00d2ff;
 }
 
-/* Barra de ajustes / configuración de idioma */
-QWidget#SettingsBar {
+/* Panel desplegable unificado de Ajustes */
+QWidget#SettingsPanel {
     background-color: #1a1a26;
     border: 1px solid #2b2b3d;
-    border-radius: 8px;
-    padding: 3px 8px;
+    border-radius: 10px;
+    padding: 6px 10px;
 }
 
 QLabel#SettingsLabel {
@@ -206,9 +222,8 @@ QPushButton.LangButton {
     border-radius: 5px;
     font-size: 11px;
     font-weight: 600;
-    padding: 2px 6px;
+    padding: 2px 8px;
 }
-
 
 QPushButton.LangButton:hover {
     background-color: #2d2d42;
@@ -220,6 +235,42 @@ QPushButton.LangButton:checked {
     color: #0c1017;
     border-color: #00d2ff;
     font-weight: 700;
+}
+
+/* Botones circulares para Mini-HUD */
+QPushButton.MiniAction {
+    background-color: #00d2ff;
+    color: #0c1017;
+    font-weight: 700;
+    font-size: 11px;
+    border: none;
+    border-radius: 13px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+}
+
+QPushButton.MiniAction:hover {
+    background-color: #38e1ff;
+}
+
+QPushButton.MiniReset {
+    background-color: #22222e;
+    color: #d1d1e0;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid #333344;
+    border-radius: 13px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+}
+
+QPushButton.MiniReset:hover {
+    background-color: #2d2d3d;
+    color: #ffffff;
 }
 
 /* Control deslizante de opacidad / settings */

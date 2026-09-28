@@ -32,12 +32,16 @@ TRANSLATIONS = {
         "btn_pause": "⏸ Pausar",
         "btn_resume": "▶ Reanudar",
         "btn_reset": "↺ Reiniciar",
+        "btn_clear": "Borrar",
+        "btn_clear_tooltip": "Restablecer a 00:00",
         "notif_title": "⏰ ¡Temporizador!",
         "notif_msg": "El tiempo ha llegado a su fin.",
         "dialog_title": "Configurar Temporizador",
         "dialog_min": "Minutos:",
         "dialog_sec": "Segundos:",
-        "lang_label": "🌐 Idioma:"
+        "lang_label": "🌐 Idioma:",
+        "mini_hud_shrink": "Modo Mini-HUD (Compactar)",
+        "mini_hud_expand": "Expandir a vista completa"
     },
     "en": {
         "tab_clock": "Clock",
@@ -46,7 +50,7 @@ TRANSLATIONS = {
         "pin_off": "Normal mode (unpinned)",
         "opacity_btn": "Adjust transparency",
         "opacity_lbl": "Opacity:",
-        "settings_btn": "Language settings",
+        "settings_btn": "Settings (Opacity & Language)",
         "minimize": "Minimize",
         "close": "Close",
         "title_tooltip": "Drag to move • Mouse wheel to adjust opacity",
@@ -66,12 +70,16 @@ TRANSLATIONS = {
         "btn_pause": "⏸ Pause",
         "btn_resume": "▶ Resume",
         "btn_reset": "↺ Reset",
+        "btn_clear": "Clear",
+        "btn_clear_tooltip": "Reset to 00:00",
         "notif_title": "⏰ Timer!",
         "notif_msg": "Time has run out.",
         "dialog_title": "Set Timer",
         "dialog_min": "Minutes:",
         "dialog_sec": "Seconds:",
-        "lang_label": "🌐 Lang:"
+        "lang_label": "🌐 Lang:",
+        "mini_hud_shrink": "Mini-HUD Mode (Compact)",
+        "mini_hud_expand": "Expand to full view"
     }
 
 }

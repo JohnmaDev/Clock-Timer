@@ -97,8 +97,8 @@ class TimerWidget(QWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.initial_seconds = 300  # 5 minutos por defecto
-        self.remaining_seconds = self.initial_seconds
+        self.initial_seconds = 0  # Inicia en 00:00 por defecto
+        self.remaining_seconds = 0
         self.is_running = False
         self.flash_state = False
 
@@ -109,84 +109,133 @@ class TimerWidget(QWidget):
 
 
     def init_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(10, 8, 10, 8)
-        layout.setSpacing(6)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        root_layout = QVBoxLayout(self)
+        root_layout.setContentsMargins(0, 0, 0, 0)
+        root_layout.setSpacing(0)
 
-        # Botones rápidos de preajustes (+1m, +5m, +25m Pomodoro)
-        self.presets_layout = QHBoxLayout()
+        # --- VISTA NORMAL ---
+        self.view_normal = QWidget(self)
+        normal_layout = QVBoxLayout(self.view_normal)
+        normal_layout.setContentsMargins(10, 6, 10, 6)
+        normal_layout.setSpacing(4)
+        normal_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Botones rápidos de preajustes (+1m, +5m, +15m, +25m, +1h)
+        self.presets_widget = QWidget(self.view_normal)
+        self.presets_layout = QHBoxLayout(self.presets_widget)
+        self.presets_layout.setContentsMargins(0, 0, 0, 0)
         self.presets_layout.setSpacing(4)
         self.presets_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        presets = [("+1m", 60), ("+5m", 300), ("+10m", 600), ("+25m", 1500)]
+        presets = [("+1m", 60), ("+5m", 300), ("+15m", 900), ("+25m", 1500), ("+1h", 3600)]
         for label, secs in presets:
-            btn = QPushButton(label, self)
+            btn = QPushButton(label, self.presets_widget)
             btn.setProperty("class", "PresetButton")
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(lambda checked, s=secs: self.add_time(s))
             self.presets_layout.addWidget(btn)
 
-        # Botón para limpiar / poner a cero
-        btn_clear = QPushButton("00:00", self)
-        btn_clear.setProperty("class", "PresetButton")
-        btn_clear.setToolTip("Restablecer a 0")
-        btn_clear.clicked.connect(self.clear_time)
-        self.presets_layout.addWidget(btn_clear)
-
-        layout.addLayout(self.presets_layout)
+        normal_layout.addWidget(self.presets_widget)
 
         # Pantalla con el tiempo restante
-        self.time_label = QLabel(self)
+        self.time_label = QLabel(self.view_normal)
         self.time_label.setProperty("class", "TimeDisplay")
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.time_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.time_label.setToolTip("Haz clic para escribir el tiempo exacto")
         self.time_label.mousePressEvent = self.open_setup_dialog
-
-        layout.addWidget(self.time_label)
+        normal_layout.addWidget(self.time_label)
 
         # Subtítulo de estado
-        self.status_label = QLabel(self)
+        self.status_label = QLabel(self.view_normal)
         self.status_label.setProperty("class", "SecondaryText")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.status_label)
+        normal_layout.addWidget(self.status_label)
 
-        # Controles principales: Iniciar/Pausar y Reiniciar
+        # Controles principales: Iniciar/Pausar, Reiniciar y Borrar/Papelera
         controls_layout = QHBoxLayout()
-        controls_layout.setSpacing(8)
+        controls_layout.setSpacing(6)
         controls_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.btn_toggle = QPushButton(self)
+        self.btn_toggle = QPushButton(self.view_normal)
         self.btn_toggle.setProperty("class", "PrimaryAction")
         self.btn_toggle.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_toggle.clicked.connect(self.toggle_timer)
 
-        self.btn_reset = QPushButton(self)
+        self.btn_reset = QPushButton(self.view_normal)
         self.btn_reset.setProperty("class", "SecondaryAction")
         self.btn_reset.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_reset.clicked.connect(self.reset_timer)
 
+        self.btn_clear = QPushButton(self.view_normal)
+        self.btn_clear.setProperty("class", "SecondaryAction")
+        self.btn_clear.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_clear.clicked.connect(self.clear_time)
+
         controls_layout.addWidget(self.btn_toggle)
         controls_layout.addWidget(self.btn_reset)
-        layout.addLayout(controls_layout)
+        controls_layout.addWidget(self.btn_clear)
+        normal_layout.addLayout(controls_layout)
+
+        root_layout.addWidget(self.view_normal)
+
+        # --- VISTA MINI-HUD (Horizontal compacta) ---
+        self.view_mini = QWidget(self)
+        self.view_mini.hide()
+        mini_layout = QHBoxLayout(self.view_mini)
+        mini_layout.setContentsMargins(10, 2, 10, 2)
+        mini_layout.setSpacing(10)
+        mini_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Botón Play/Pause circular compacto
+        self.btn_mini_toggle = QPushButton("▶", self.view_mini)
+        self.btn_mini_toggle.setProperty("class", "MiniAction")
+        self.btn_mini_toggle.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_mini_toggle.setToolTip("Iniciar / Pausar")
+        self.btn_mini_toggle.clicked.connect(self.toggle_timer)
+        mini_layout.addWidget(self.btn_mini_toggle)
+
+        # Tiempo centrado
+        self.mini_time_label = QLabel(self.view_mini)
+        self.mini_time_label.setProperty("class", "TimeDisplay")
+        self.mini_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.mini_time_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.mini_time_label.setToolTip("Clic para pausar / reanudar")
+        self.mini_time_label.mousePressEvent = lambda ev: self.toggle_timer()
+        mini_layout.addWidget(self.mini_time_label, 1)
+
+        # Botón Reset circular compacto
+        self.btn_mini_reset = QPushButton("↺", self.view_mini)
+        self.btn_mini_reset.setProperty("class", "MiniReset")
+        self.btn_mini_reset.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_mini_reset.setToolTip("Reiniciar")
+        self.btn_mini_reset.clicked.connect(self.reset_timer)
+        mini_layout.addWidget(self.btn_mini_reset)
+
+        root_layout.addWidget(self.view_mini)
 
         self.retranslate_ui()
 
     def retranslate_ui(self):
         self.time_label.setToolTip(i18n.t("timer_click_tooltip"))
         self.btn_reset.setText(i18n.t("btn_reset"))
+        self.btn_clear.setText("🗑 " + i18n.t("btn_clear"))
+        self.btn_clear.setToolTip(i18n.t("btn_clear_tooltip"))
         if self.is_running:
             self.btn_toggle.setText(i18n.t("btn_pause"))
+            self.btn_mini_toggle.setText("⏸")
             self.status_label.setText(i18n.t("timer_hint_running"))
         elif self.remaining_seconds < self.initial_seconds and self.remaining_seconds > 0:
             self.btn_toggle.setText(i18n.t("btn_resume"))
+            self.btn_mini_toggle.setText("▶")
             self.status_label.setText(i18n.t("timer_hint_paused"))
         elif self.remaining_seconds == 0:
             self.btn_toggle.setText(i18n.t("btn_start"))
-            self.status_label.setText(i18n.t("timer_hint_finished"))
+            self.btn_mini_toggle.setText("▶")
+            self.status_label.setText(i18n.t("timer_hint_idle") if self.initial_seconds == 0 else i18n.t("timer_hint_finished"))
         else:
             self.btn_toggle.setText(i18n.t("btn_start"))
+            self.btn_mini_toggle.setText("▶")
             self.status_label.setText(i18n.t("timer_hint_idle"))
 
 
@@ -212,11 +261,19 @@ class TimerWidget(QWidget):
         self.update_display()
 
     def clear_time(self):
-        if not self.is_running:
-            self.initial_seconds = 0
-            self.remaining_seconds = 0
-            self.stop_alarm()
-            self.update_display()
+        self.stop_alarm()
+        self.timer.stop()
+        self.is_running = False
+        self.initial_seconds = 0
+        self.remaining_seconds = 0
+        self.btn_toggle.setText(i18n.t("btn_start"))
+        self.btn_mini_toggle.setText("▶")
+        self.btn_toggle.setStyleSheet("")
+        self.btn_mini_toggle.setStyleSheet("")
+        self.time_label.setStyleSheet("color: #ffffff;")
+        self.mini_time_label.setStyleSheet("color: #ffffff;")
+        self.status_label.setText(i18n.t("timer_hint_idle"))
+        self.update_display()
 
     def open_setup_dialog(self, event=None):
         if self.is_running:
@@ -241,21 +298,28 @@ class TimerWidget(QWidget):
 
     def start_timer(self):
         if self.remaining_seconds <= 0:
+            self.open_setup_dialog()
             return
         self.is_running = True
         self.timer.start()
         self.btn_toggle.setText(i18n.t("btn_pause"))
+        self.btn_mini_toggle.setText("⏸")
         self.status_label.setText(i18n.t("timer_hint_running"))
         self.btn_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419;")
+        self.btn_mini_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419;")
         self.time_label.setStyleSheet("color: #00d2ff;")
+        self.mini_time_label.setStyleSheet("color: #00d2ff;")
 
     def pause_timer(self):
         self.is_running = False
         self.timer.stop()
         self.btn_toggle.setText(i18n.t("btn_resume"))
+        self.btn_mini_toggle.setText("▶")
         self.status_label.setText(i18n.t("timer_hint_paused"))
         self.btn_toggle.setStyleSheet("")
+        self.btn_mini_toggle.setStyleSheet("")
         self.time_label.setStyleSheet("color: #ffffff;")
+        self.mini_time_label.setStyleSheet("color: #ffffff;")
 
     def reset_timer(self):
         self.stop_alarm()
@@ -263,8 +327,11 @@ class TimerWidget(QWidget):
         self.is_running = False
         self.remaining_seconds = self.initial_seconds
         self.btn_toggle.setText(i18n.t("btn_start"))
+        self.btn_mini_toggle.setText("▶")
         self.btn_toggle.setStyleSheet("")
+        self.btn_mini_toggle.setStyleSheet("")
         self.time_label.setStyleSheet("color: #ffffff;")
+        self.mini_time_label.setStyleSheet("color: #ffffff;")
         self.status_label.setText(i18n.t("timer_hint_idle"))
         self.update_display()
 
@@ -276,7 +343,9 @@ class TimerWidget(QWidget):
             self.timer.stop()
             self.is_running = False
             self.btn_toggle.setText(i18n.t("btn_start"))
+            self.btn_mini_toggle.setText("▶")
             self.btn_toggle.setStyleSheet("")
+            self.btn_mini_toggle.setStyleSheet("")
             self.status_label.setText(i18n.t("timer_hint_finished"))
             self.trigger_alarm()
 
@@ -305,10 +374,13 @@ class TimerWidget(QWidget):
         self.alarm_count += 1
         self.flash_state = not self.flash_state
         if self.flash_state:
-            self.time_label.setStyleSheet("color: #ff3366; background-color: #331122; border-radius: 8px;")
+            alert_style = "color: #ff3366; background-color: #331122; border-radius: 8px;"
+            self.time_label.setStyleSheet(alert_style)
+            self.mini_time_label.setStyleSheet(alert_style)
             QApplication.beep()
         else:
             self.time_label.setStyleSheet("color: #ffffff; background-color: transparent;")
+            self.mini_time_label.setStyleSheet("color: #ffffff; background-color: transparent;")
 
         # Detener la alarma automáticamente tras 12 parpadeos (~5 segundos)
         if self.alarm_count >= 12:
@@ -318,6 +390,7 @@ class TimerWidget(QWidget):
         if self.alarm_timer.isActive():
             self.alarm_timer.stop()
             self.time_label.setStyleSheet("color: #ffffff; background-color: transparent;")
+            self.mini_time_label.setStyleSheet("color: #ffffff; background-color: transparent;")
             self.status_label.setText(i18n.t("timer_hint_ready"))
 
 
@@ -331,17 +404,43 @@ class TimerWidget(QWidget):
         else:
             text = f"{mins:02d}:{secs:02d}"
 
+        old_text = self.mini_time_label.text()
         self.time_label.setText(text)
+        self.mini_time_label.setText(text)
+
+        # Si cambió el formato (ej. de MM:SS a HH:MM:SS o viceversa), reajustar fuente al instante
+        if len(text) != len(old_text):
+            self.resizeEvent(None)
+
+    def set_mini_mode(self, enabled: bool):
+        self.is_mini_mode = enabled
+        self.view_normal.setVisible(not enabled)
+        self.view_mini.setVisible(enabled)
+        self.btn_mini_toggle.setText("⏸" if self.is_running else "▶")
+        self.resizeEvent(None)
 
     def resizeEvent(self, event):
         """Ajusta proporcionalmente el tamaño de fuente según el tamaño de la ventana."""
-        super().resizeEvent(event)
+        if event is not None:
+            super().resizeEvent(event)
         w = self.width()
         h = self.height()
-        base_size = min(w, h)
-        font_size = max(18, int(base_size / 5.5))
-
-        font = self.time_label.font()
-        font.setPointSize(font_size)
-        font.setBold(True)
-        self.time_label.setFont(font)
+        if getattr(self, "is_mini_mode", False):
+            text = self.mini_time_label.text()
+            if len(text) > 5:
+                # Tiempo largo con horas (ej: 01:39:51 tiene 8 caracteres) -> tamaño legible y balanceado
+                font_size = max(15, min(20, int(h * 0.45)))
+            else:
+                # Tiempo normal (ej: 05:00 tiene 5 caracteres)
+                font_size = max(18, min(26, int(h * 0.55)))
+            font = self.mini_time_label.font()
+            font.setPointSize(font_size)
+            font.setBold(True)
+            self.mini_time_label.setFont(font)
+        else:
+            base_size = min(w, h)
+            font_size = max(18, int(base_size / 5.5))
+            font = self.time_label.font()
+            font.setPointSize(font_size)
+            font.setBold(True)
+            self.time_label.setFont(font)
