@@ -55,6 +55,15 @@
   </screenshots>
 
   <releases>
+    <release version="1.1.1" date="2026-09-27">
+      <description>
+        <p>Interaction and Gesture Polish:</p>
+        <ul>
+          <li>GNOME-style dual click-or-drag gesture on navigation tabs and time displays</li>
+          <li>Smooth full-window dragging from anywhere across Wayland, X11, and Windows</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-09-27">
       <description>
         <p>Mini-HUD Focus Mode and Timer Enhancements:</p>
