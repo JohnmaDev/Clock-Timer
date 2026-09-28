@@ -1,8 +1,17 @@
 app-id: io.github.JohnmaDev.ClockTimer
 runtime: org.kde.Platform
-runtime-version: '6.8'
+runtime-version: '6.11'
 sdk: org.kde.Sdk
+base: com.riverbankcomputing.PyQt.BaseApp
+base-version: '6.11'
 command: clock-timer
+
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+
+build-options:
+  env:
+    - BASEAPP_REMOVE_WEBENGINE=1
 
 finish-args:
   - --share=ipc
@@ -12,8 +21,6 @@ finish-args:
   - --talk-name=org.freedesktop.Notifications
 
 modules:
-  - python3-requirements.json
-
   - name: clock-timer
     buildsystem: simple
     build-commands:
@@ -21,17 +28,19 @@ modules:
       - cp -r app /app/share/clock-timer/
       - install -D -m644 icon.png /app/share/clock-timer/icon.png
       - install -D -m755 main.py /app/share/clock-timer/main.py
-      # Wrapper launcher script
+      # Launcher
       - |
         cat << 'EOF' > /app/bin/clock-timer
         #!/bin/sh
         exec python3 /app/share/clock-timer/main.py "$@"
         EOF
       - chmod +x /app/bin/clock-timer
-      # Desktop entry and AppStream metadata
+      # Desktop, metainfo, and icon
       - install -D -m644 io.github.JohnmaDev.ClockTimer.desktop /app/share/applications/io.github.JohnmaDev.ClockTimer.desktop
       - install -D -m644 io.github.JohnmaDev.ClockTimer.metainfo.xml /app/share/metainfo/io.github.JohnmaDev.ClockTimer.metainfo.xml
       - install -D -m644 io.github.JohnmaDev.ClockTimer.png /app/share/icons/hicolor/512x512/apps/io.github.JohnmaDev.ClockTimer.png
     sources:
-      - type: dir
-        path: .
+      - type: git
+        url: https://github.com/JohnmaDev/Clock-Timer.git
+        tag: v1.0.0
+        commit: 89ddd1fbce9c4e0f13508d0701da526543b59364
