@@ -55,6 +55,19 @@
   </screenshots>
 
   <releases>
+    <release version="1.2.0" date="2026-09-28">
+      <description>
+        <p>Minimalist UI overhaul, System Tray, and notification fixes:</p>
+        <ul>
+          <li>Fix notification freeze on Linux by using normal urgency with automatic 5s dismissal</li>
+          <li>Fix notification identity and icon by passing proper app name and icon to desktop daemon</li>
+          <li>Add native Windows Action Center notifications and System Tray integration</li>
+          <li>Fix window recentering bug when toggling between standard and Mini-HUD mode</li>
+          <li>Modern minimalist icon-only controls for tabs and timer actions to eliminate text clipping</li>
+          <li>Redesigned time setup dialog with auto-repeating stepper controls and quick chip buttons</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.1" date="2026-09-27">
       <description>
         <p>Interaction and Gesture Polish:</p>

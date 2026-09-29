@@ -1,8 +1,12 @@
+import os
+import shutil
+import subprocess
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-    QStackedWidget, QSizeGrip, QLabel, QSlider
+    QStackedWidget, QSizeGrip, QLabel, QSlider,
+    QSystemTrayIcon, QMenu, QApplication
 )
-from PyQt6.QtCore import Qt, QPoint, QEvent, QTimer
+from PyQt6.QtCore import Qt, QEvent, QTimer, QSize
 from PyQt6.QtGui import QCursor
 
 
@@ -31,6 +35,7 @@ class FloatingClockTimerWindow(QWidget):
         self.always_on_top = True
         self.old_pos = None
         self.is_mini_mode = False
+        self.icon_path = None
 
         self.init_window_flags()
         self.init_ui()
@@ -45,9 +50,9 @@ class FloatingClockTimerWindow(QWidget):
         flags = Qt.WindowType.Dialog | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint
         self.setWindowFlags(flags)
 
-        # Dimensiones iniciales y mínimas: Cuadrado compacto y cómodo
-        self.resize(285, 255)
-        self.setMinimumSize(210, 185)
+        # Dimensiones iniciales y mínimas: Diseño compacto y minimalista
+        self.resize(255, 230)
+        self.setMinimumSize(235, 210)
 
 
     def init_ui(self):
@@ -77,18 +82,20 @@ class FloatingClockTimerWindow(QWidget):
         title_layout.setContentsMargins(2, 2, 2, 2)
         title_layout.setSpacing(4)
 
-        # Botones para cambiar entre Reloj y Temporizador (con arrastre dual estilo GNOME)
-        self.btn_clock_tab = DraggableTabButton("Reloj", self.title_bar)
+        # Botones para cambiar entre Reloj y Temporizador (Iconos minimalistas)
+        self.btn_clock_tab = DraggableTabButton("🕒", self.title_bar)
         self.btn_clock_tab.setProperty("class", "NavButton")
         self.btn_clock_tab.setCheckable(True)
         self.btn_clock_tab.setChecked(True)
         self.btn_clock_tab.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_clock_tab.setToolTip(i18n.t("tab_clock"))
         self.btn_clock_tab.clicked.connect(self.show_clock)
 
-        self.btn_timer_tab = DraggableTabButton("Timer", self.title_bar)
+        self.btn_timer_tab = DraggableTabButton("⏳", self.title_bar)
         self.btn_timer_tab.setProperty("class", "NavButton")
         self.btn_timer_tab.setCheckable(True)
         self.btn_timer_tab.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_timer_tab.setToolTip(i18n.t("tab_timer"))
         self.btn_timer_tab.clicked.connect(self.show_timer)
 
         title_layout.addWidget(self.btn_clock_tab)
@@ -136,12 +143,12 @@ class FloatingClockTimerWindow(QWidget):
         self.settings_panel.hide()
 
         panel_layout = QVBoxLayout(self.settings_panel)
-        panel_layout.setContentsMargins(8, 6, 8, 6)
-        panel_layout.setSpacing(6)
+        panel_layout.setContentsMargins(6, 6, 6, 6)
+        panel_layout.setSpacing(5)
 
         # Fila 1: Control de Opacidad
         op_row = QHBoxLayout()
-        op_row.setSpacing(6)
+        op_row.setSpacing(4)
         self.lbl_op = QLabel(self.settings_panel)
         self.lbl_op.setObjectName("OpacityLabel")
 
@@ -255,7 +262,9 @@ class FloatingClockTimerWindow(QWidget):
         """Alterna entre el Modo Normal y el Modo Mini-HUD / Enfoque compacto."""
         self.is_mini_mode = not getattr(self, "is_mini_mode", False)
         if self.is_mini_mode:
-            self.saved_geometry = self.geometry()
+            # Guardamos el tamaño que tenía en la vista completa (no la posición)
+            self.saved_size = self.size()
+            cur_pos = self.pos()
 
             # Ocultar controles de la vista completa
             self.btn_clock_tab.hide()
@@ -276,8 +285,9 @@ class FloatingClockTimerWindow(QWidget):
             self.container.layout().setContentsMargins(6, 2, 6, 4)
             self.container.layout().setSpacing(0)
 
-            self.setMinimumSize(210, 68)
-            self.resize(240, 75)
+            self.setMinimumSize(200, 68)
+            self.resize(230, 75)
+            self.move(cur_pos)
         else:
             self.btn_clock_tab.show()
             self.btn_timer_tab.show()
@@ -296,11 +306,128 @@ class FloatingClockTimerWindow(QWidget):
             self.container.layout().setContentsMargins(10, 8, 10, 8)
             self.container.layout().setSpacing(4)
 
-            self.setMinimumSize(210, 185)
-            if hasattr(self, "saved_geometry"):
-                self.setGeometry(self.saved_geometry)
-            else:
-                self.resize(285, 255)
+            self.setMinimumSize(235, 210)
+
+            # Restaurar el tamaño manteniendo la posición actual donde el usuario colocó la ventana
+            target_size = getattr(self, "saved_size", QSize(255, 230))
+            cur_x = self.x()
+            cur_y = self.y()
+            w = target_size.width()
+            h = target_size.height()
+
+            # Asegurar que no quede fuera de los límites de la pantalla si se expande pegado al borde
+            screen = self.screen().availableGeometry() if self.screen() else None
+            if screen:
+                if cur_x + w > screen.right():
+                    cur_x = max(screen.left(), screen.right() - w)
+                if cur_y + h > screen.bottom():
+                    cur_y = max(screen.top(), screen.bottom() - h)
+                if cur_x < screen.left():
+                    cur_x = screen.left()
+                if cur_y < screen.top():
+                    cur_y = screen.top()
+
+            self.setGeometry(cur_x, cur_y, w, h)
+
+    def init_tray_icon(self, icon, icon_path=None):
+        """Inicializa el icono en la bandeja del sistema (System Tray / flecha ^)."""
+        if icon_path:
+            self.icon_path = icon_path
+        if not QSystemTrayIcon.isSystemTrayAvailable():
+            return
+
+        self.tray_icon = QSystemTrayIcon(icon, self)
+        self.tray_icon.setToolTip("Clock & Timer")
+
+        tray_menu = QMenu()
+        tray_menu.setStyleSheet("""
+            QMenu {
+                background-color: #14141c;
+                color: #ffffff;
+                border: 1.5px solid #2d2d3f;
+                border-radius: 8px;
+                padding: 4px;
+                font-size: 12px;
+            }
+            QMenu::item {
+                padding: 6px 18px;
+                border-radius: 4px;
+            }
+            QMenu::item:selected {
+                background-color: #00d2ff;
+                color: #080c14;
+                font-weight: bold;
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: #282838;
+                margin: 4px 6px;
+            }
+        """)
+
+        # Título de cabecera en el menú
+        header_action = tray_menu.addAction("Clock & Timer")
+        header_action.setEnabled(False)
+        tray_menu.addSeparator()
+
+        action_toggle = tray_menu.addAction("Mostrar / Ocultar")
+        action_toggle.triggered.connect(self.toggle_window_visibility)
+
+        action_clock = tray_menu.addAction("🕒 Modo Reloj")
+        action_clock.triggered.connect(lambda: (self.show_clock(), self.show_and_raise()))
+
+        action_timer = tray_menu.addAction("⏳ Modo Temporizador")
+        action_timer.triggered.connect(lambda: (self.show_timer(), self.show_and_raise()))
+
+        tray_menu.addSeparator()
+
+        action_quit = tray_menu.addAction("✕ Salir")
+        action_quit.triggered.connect(QApplication.instance().quit)
+
+        self.tray_icon.setContextMenu(tray_menu)
+        self.tray_icon.activated.connect(self._on_tray_activated)
+        self.tray_icon.show()
+
+    def _on_tray_activated(self, reason):
+        if reason in (QSystemTrayIcon.ActivationReason.Trigger, QSystemTrayIcon.ActivationReason.DoubleClick):
+            self.toggle_window_visibility()
+
+    def toggle_window_visibility(self):
+        """Alterna visibilidad de la ventana al hacer clic en el System Tray."""
+        if self.isVisible():
+            self.hide()
+        else:
+            self.show_and_raise()
+
+    def show_and_raise(self):
+        """Muestra y trae la ventana al frente con foco."""
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
+    def show_desktop_notification(self, title, message):
+        """Muestra una notificación nativa no intrusiva con auto-cierre en Linux y Windows."""
+        # 1. En Linux, si notify-send está disponible, usarlo con identidad y auto-cierre normal
+        if shutil.which("notify-send"):
+            try:
+                cmd = ["notify-send", "-a", "Clock & Timer", "-u", "normal", "-t", "5000"]
+                icon_arg = getattr(self, "icon_path", None)
+                if icon_arg and os.path.exists(str(icon_arg)):
+                    cmd.extend(["-i", str(icon_arg)])
+                else:
+                    cmd.extend(["-i", "io.github.JohnmaDev.Clock-Timer"])
+                cmd.extend([title, message])
+                subprocess.Popen(cmd)
+                return
+            except Exception:
+                pass
+
+        # 2. En Windows (o Linux si notify-send no está), usar QSystemTrayIcon nativo
+        if hasattr(self, "tray_icon") and self.tray_icon and self.tray_icon.isVisible():
+            try:
+                self.tray_icon.showMessage(title, message, QSystemTrayIcon.MessageIcon.Information, 5000)
+            except Exception:
+                pass
 
     def toggle_pin(self):
         """Alterna el modo 'Siempre al frente' (Always on top)."""
@@ -341,8 +468,8 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_lang_es.setChecked(current == "es")
         self.btn_lang_en.setChecked(current == "en")
 
-        self.btn_clock_tab.setText(i18n.t("tab_clock"))
-        self.btn_timer_tab.setText(i18n.t("tab_timer"))
+        self.btn_clock_tab.setToolTip(i18n.t("tab_clock"))
+        self.btn_timer_tab.setToolTip(i18n.t("tab_timer"))
 
         if getattr(self, "is_mini_mode", False):
             self.btn_mini_hud.setToolTip(i18n.t("mini_hud_expand"))

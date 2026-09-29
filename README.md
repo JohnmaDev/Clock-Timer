@@ -24,31 +24,54 @@
 
 <p align="center">
   <img src="assets/screenshots/preview_clock.png" width="48%" alt="Clock View" />
-  <img src="assets/screenshots/preview_timer_en.png" width="48%" alt="Timer View" />
+  <img src="assets/screenshots/preview_timer.png" width="48%" alt="Timer View" />
 </p>
 <p align="center">
-  <img src="assets/screenshots/preview_opacity_control.png" width="48%" alt="Opacity Control" />
-  <img src="assets/screenshots/preview_settings_en.png" width="48%" alt="Settings Language" />
+  <em>Clock View (24h/12h toggle) &nbsp;&bull;&nbsp; Minimalist Timer View (Icon actions & quick presets)</em>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/preview_mini_hud.png" width="60%" alt="Mini-HUD Focus Mode" />
+</p>
+<p align="center">
+  <em>Mini-HUD Focus Mode (Ultra-compact 230x75 px floating strip)</em>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/preview_time_setup.png" width="48%" alt="Time Setup Stepper Dialog" />
+  <img src="assets/screenshots/preview_settings.png" width="48%" alt="Settings & Opacity Control" />
+</p>
+<p align="center">
+  <em>Precision Stepper Setup Dialog &nbsp;&bull;&nbsp; Unified Opacity & Language Settings</em>
 </p>
 
 ---
 
 ## ✨ Features / Características
 
-- 📌 **Always on Top (Siempre al Frente)**: Stays permanently visible above all programs, workspaces, full-screen apps, or games. Includes an instant toggle pin icon (`📌`).
-- 🪟 **Frameless & Resizable (Sin Marcos y Redimensionable)**: Minimalist dark UI without bulky OS title bars. Freely draggable and scalable from any of its 4 edges or bottom-right corner.
-- 📐 **Dynamic Typography Scaling**: Clock and timer digits automatically scale proportionally as you resize the window.
-- 🕒 **Clock Mode**: Displays hours, minutes, seconds, and localized full date. Click the clock face to switch between **24-hour** and **12-hour AM/PM** format.
-- ⏳ **Countdown Timer**: 
-  - Quick presets: `+1m`, `+5m`, `+10m`, `+25m (Pomodoro)` and `00:00` reset.
-  - Click digits to open custom precision minute/second spinbox dial.
-  - Multi-alert alarm: System desktop notification (`notify-send`), terminal/system audio alert (`beep`), and visual flashing warning.
-- ◐ **Interactive Opacity Control**:
-  - Click `◐` to open the quick opacity slider (30% to 100%) with quick jump buttons (`50%`, `75%`, `100%`).
-  - **Mouse Wheel Scroll**: Simply roll your mouse scroll wheel anywhere over the widget to dynamically increase or decrease transparency on the fly.
-- 🌐 **Full Bilingual Support (English / Spanish)**:
-  - Settings button `⚙` opens instant language switch between English and Spanish.
-  - Persists preference automatically across restarts using `QSettings`.
+- 📌 **Always on Top (Siempre al Frente)**: Permanece visible por encima de navegadores, editores de código, IDEs y juegos. Se activa/desactiva al instante con el botón de chincheta (`📌`).
+- 🪟 **Frameless & Ultra-Compact (Sin Marcos y Redimensionable)**: Interfaz oscura moderna sin barras toscas del sistema. Redimensionable desde sus 4 bordes o esquina inferior (mínimo ultra-compacto: 235 &times; 210 px).
+- ⚡ **Ultra-Lightweight (~87 MB RAM, <0.2% CPU)**: Rendimiento nativo Qt6 sin el sobrecosto de Chromium ni frameworks web pesados. 8-10 veces más ligero que herramientas en Electron.
+- 🕒 **Minimalist Clock Mode (Modo Reloj)**: Visualización limpia de hora con segundos y fecha completa localizada. Clic en los dígitos para alternar al instante entre **formato 24h** y **formato 12h AM/PM**.
+- ⏳ **Minimalist Timer Mode (Modo Temporizador)**: 
+  - **Controles por iconos limpios**: Iniciar/Pausar (`▶`/`⏸`), Reiniciar (`↺`) y Borrar/Restablecer (`🗑`) para evitar recortes de texto en tamaños pequeños.
+  - **Presets rápidos**: Botones inmediatos de `+1m`, `+5m`, `+15m`, `+25m (Pomodoro)` y `+1h`.
+  - **Selector dial de precisión**: Clic en los números para abrir el configurador visual con botones paso a paso (`▲`/`▼`) y chips rápidos (`+1m`, `+5m`, `+15m`, `00:00`).
+- 🔍 **Mini-HUD Focus Mode**:
+  - Modo ultra-reducido de 230 &times; 75 px que ocupa el mínimo espacio en pantalla.
+  - Preserva la posición exacta donde colocaste la ventana sin saltar al centro al restaurarla.
+  - Atajo rápido: Tecla `M` o `F`, o botón `↙` en la cabecera.
+- 🔔 **Smart Non-Intrusive Desktop Notifications**:
+  - En Linux: Alarma de escritorio con nombre de la app (`Clock & Timer`), icono oficial y **auto-cierre a los 5 segundos** (no se queda congelada en pantalla).
+  - En Windows: Notificaciones nativas integradas con el Centro de Actividades (Action Center).
+  - Alerta combinada sonora (`beep` del sistema) y parpadeo visual llamativo.
+- 🗔 **System Tray Integration (Bandeja del Sistema)**:
+  - Icono residente en la bandeja (`^`) para mostrar u ocultar la ventana, alternar rápidamente entre Reloj y Temporizador o cerrar la app.
+- ◐ **Interactive Opacity Control (Transparencia Interactiva)**:
+  - Barra deslizante de opacidad del 30% al 100% con saltos rápidos (`50%`, `75%`, `100%`).
+  - **Rueda del ratón (Mouse Wheel)**: Gira la rueda del mouse en cualquier parte de la ventana para ajustar la transparencia al vuelo.
+- 🌐 **Bilingual Support (Español / English)**:
+  - Selector instantáneo en el panel de ajustes con persistencia de preferencias (`QSettings`).
 
 ---
 
@@ -56,14 +79,17 @@
 
 | Action / Acción | Control / Gesto |
 | :--- | :--- |
-| **Move window** / Mover ventana | Click and drag the top header bar |
-| **Resize** / Redimensionar | Drag any of the 4 borders or bottom-right corner |
-| **Adjust opacity on the fly** / Opacidad al vuelo | **Mouse scroll wheel** over the window |
-| **Toggle Opacity slider** / Desplegar barra de opacidad | Click `◐` button |
-| **Toggle Settings / Language** / Cambiar idioma | Click `⚙` button |
-| **Switch Clock / Timer tab** / Alternar pestaña | `Tab` key or click tab label |
-| **Start / Pause Timer** / Iniciar o pausar | `Space` key |
-| **Close app** / Cerrar | `Escape` key or `✕` button |
+| **Move window** / Mover ventana | Clic y arrastre desde la cabecera, pestañas o dígitos del reloj |
+| **Resize** / Redimensionar | Arrastrar cualquiera de los 4 bordes o la esquina inferior derecha |
+| **Adjust opacity on the fly** / Opacidad al vuelo | **Rueda del mouse** en cualquier parte de la ventana |
+| **Toggle Mini-HUD Mode** / Modo Mini-HUD | Tecla `M`, tecla `F` o botón `↙` / `⤢` |
+| **Start / Pause Timer** / Iniciar o pausar | Tecla `Space` o botón `▶`/`⏸` |
+| **Reset / Clear** / Reiniciar o borrar | Botones `↺` y `🗑` |
+| **Switch Clock / Timer tab** / Alternar pestaña | Tecla `Tab` o botones `🕒` / `⏳` |
+| **Toggle Settings Panel** / Panel de ajustes | Botón `⚙` |
+| **Toggle Always on Top** / Fijar al frente | Botón `📌` |
+| **System Tray** / Bandeja del sistema | Clic izquierdo en el icono de la bandeja para mostrar/ocultar |
+| **Close app** / Cerrar | Tecla `Escape` o botón `✕` |
 
 ---
 
@@ -78,7 +104,7 @@ cd Clock-Timer
 chmod +x run.sh
 ./run.sh
 ```
-*(Automatically sets up virtual environment and installs dependencies if needed).*
+*(Crea automáticamente el entorno virtual e instala dependencias si es necesario).*
 
 #### Option 2: Run with Python venv
 ```bash
@@ -96,44 +122,36 @@ cp io.github.JohnmaDev.Clock-Timer.desktop ~/.local/share/applications/
 ---
 
 ### 📦 Flatpak & Flathub
-This application follows official Freedesktop and Flathub packaging guidelines:
+Esta aplicación sigue las directrices oficiales de empaquetado de Freedesktop y Flathub:
 - **App ID**: `io.github.JohnmaDev.Clock-Timer`
 - **Metadata**: [io.github.JohnmaDev.Clock-Timer.metainfo.xml](io.github.JohnmaDev.Clock-Timer.metainfo.xml)
 - **Manifest**: [io.github.JohnmaDev.Clock-Timer.yaml](io.github.JohnmaDev.Clock-Timer.yaml)
 
-To track the official review and approval progress, visit Flathub PR [#10413](https://github.com/flathub/flathub/pull/10413).
+Para seguir el progreso de aprobación oficial, visita [Flathub PR #10413](https://github.com/flathub/flathub/pull/10413).
 
 ---
 
 ### 🪟 Windows
 
-1. Install Python 3.10+ from [python.org](https://www.python.org/) (*check "Add Python to PATH"*).
-2. Clone and enter the repository:
-   ```cmd
-   git clone https://github.com/JohnmaDev/Clock-Timer.git
-   cd Clock-Timer
-   pip install -r requirements.txt
-   python main.py
-   ```
+#### 📦 Descargar Ejecutable Portátil (`Clock & Timer.exe`)
+¡No necesitas tener Python instalado! Descarga el ejecutable precompilado **`Clock & Timer.exe`** directamente desde la página de [GitHub Releases](https://github.com/JohnmaDev/Clock-Timer/releases).
 
-#### 📦 Download Standalone Executable (.exe)
-You don't need Python installed! Download the pre-built `Clock-Timer-Windows-x64.exe` directly from the [GitHub Releases](https://github.com/JohnmaDev/Clock-Timer/releases) page.
-
-Or compile it yourself with PyInstaller:
+O compílalo tú mismo con PyInstaller:
 ```cmd
 pip install pyinstaller
-pyinstaller --onefile --windowed --name "Clock-Timer-Windows-x64" --icon "icon.png" --add-data "app;app" --add-data "icon.png;." main.py
+pyinstaller --onefile --windowed --name "Clock & Timer" --icon "icon.ico" --add-data "app;app" --add-data "icon.png;." main.py
 ```
 
 ---
 
 ## 🤖 Continuous Integration / GitHub Actions
 
-This repository includes an automated workflow [`.github/workflows/release.yml`](.github/workflows/release.yml). Every time a release tag (e.g. `v1.0.0`) is pushed:
-1. Validates AppStream metainfo and `.desktop` files.
-2. Compiles a standalone Linux binary (`Clock-Timer-Linux-x86_64`).
-3. Compiles a standalone Windows executable (`Clock-Timer-Windows-x64.exe`).
-4. Automatically publishes a GitHub Release with both binaries ready for download.
+El repositorio cuenta con integración continua automatizada en [`.github/workflows/release.yml`](.github/workflows/release.yml):
+1. Valida los metadatos AppStream y `.desktop` con `appstreamcli` y `desktop-file-validate`.
+2. Compila el binario independiente para Linux (`Clock-Timer-Linux-x86_64`), paquetes nativos `.deb` y `.rpm`, y `AppImage`.
+3. Compila el ejecutable nativo para Windows (`Clock & Timer.exe`).
+4. Genera automáticamente las notas de lanzamiento categorizadas ([`.github/release.yml`](.github/release.yml)) y publica la Release en GitHub con todos los archivos descargables.
+5. Registra el historial de versiones en el [`CHANGELOG.md`](CHANGELOG.md) siguiendo el estándar *Keep a Changelog*.
 
 ---
 
@@ -142,26 +160,29 @@ This repository includes an automated workflow [`.github/workflows/release.yml`]
 ```text
 Clock-Timer/
 ├── .github/
+│   ├── release.yml                     # GitHub automated release notes categories
 │   └── workflows/
-│       └── release.yml                 # Automated Linux & Windows CI/CD release builder
+│       └── release.yml                 # Automated Linux & Windows CI/CD release workflow
 ├── app/
 │   ├── __init__.py                     # Package initialization
 │   ├── clock_widget.py                 # Responsive clock display & 12h/24h toggle
+│   ├── draggable_widgets.py            # GNOME-style dual click/drag gesture labels
 │   ├── i18n.py                         # Internationalization engine (EN / ES) & settings
-│   ├── styles.py                       # Modern dark-mode QSS stylesheets
-│   ├── timer_widget.py                 # Countdown timer, presets, alarms & notification
-│   └── window.py                       # Frameless floating window, resizing & controls
+│   ├── styles.py                       # Modern dark-mode QSS stylesheets & minimalist icons
+│   ├── timer_widget.py                 # Countdown timer, presets, alarms & stepper dialog
+│   └── window.py                       # Frameless floating window, resizing, HUD & system tray
 ├── assets/
 │   ├── branding/                       # Design concepts & exploration artwork
 │   ├── icons/                          # Application icon (512x512 circular PNG)
-│   └── screenshots/                    # UI preview screenshots
+│   └── screenshots/                    # Updated UI preview screenshots
+├── CHANGELOG.md                        # Standardized release changelog
 ├── io.github.JohnmaDev.Clock-Timer.desktop     # FreeDesktop desktop entry
 ├── io.github.JohnmaDev.Clock-Timer.metainfo.xml# AppStream 1.0 metadata
 ├── io.github.JohnmaDev.Clock-Timer.png         # Standard App ID icon
 ├── io.github.JohnmaDev.Clock-Timer.yaml        # Flatpak build manifest
 ├── LICENSE                             # MIT License
 ├── main.py                             # Application entry point
-├── README.md                           # Documentation
+├── README.md                           # Documentation & showcase
 ├── requirements.txt                    # Python dependencies (PyQt6)
 └── run.sh                              # Linux auto-launcher script
 ```

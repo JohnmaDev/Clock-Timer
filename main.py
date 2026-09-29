@@ -12,18 +12,13 @@ from app.window import FloatingClockTimerWindow
 
 APP_ID = "io.github.JohnmaDev.Clock-Timer"
 
-def get_app_icon():
-    # 1. Intentar desde el tema del sistema (estándar FreeDesktop / Flatpak)
-    theme_icon = QIcon.fromTheme(APP_ID)
-    if not theme_icon.isNull():
-        return theme_icon
-    
-    # 2. Rutas candidatas locales o empaquetadas
+def get_app_icon_info():
+    # 1. Rutas candidatas locales o empaquetadas prioritarias (para icon path en notify-send)
     base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     candidates = [
+        os.path.join(base_dir, "assets", "icons", "io.github.JohnmaDev.Clock-Timer.png"),
         os.path.join(base_dir, "icon.png"),
         os.path.join(base_dir, "io.github.JohnmaDev.Clock-Timer.png"),
-        os.path.join(base_dir, "assets", "icons", "io.github.JohnmaDev.Clock-Timer.png"),
         f"/app/share/icons/hicolor/512x512/apps/{APP_ID}.png",
         f"/usr/share/icons/hicolor/512x512/apps/{APP_ID}.png",
     ]
@@ -31,8 +26,14 @@ def get_app_icon():
         if os.path.exists(path):
             icon = QIcon(path)
             if not icon.isNull():
-                return icon
-    return QIcon()
+                return icon, path
+
+    # 2. Intentar desde el tema del sistema (estándar FreeDesktop / Flatpak)
+    theme_icon = QIcon.fromTheme(APP_ID)
+    if not theme_icon.isNull():
+        return theme_icon, APP_ID
+
+    return QIcon(), None
 
 def main():
     # Permite cerrar la aplicación limpiamente con Ctrl+C en la terminal
@@ -44,14 +45,17 @@ def main():
     app.setDesktopFileName(APP_ID)
 
     # Cargar icono de la aplicación (formato estándar circular con transparencia)
-    app_icon = get_app_icon()
+    app_icon, icon_path = get_app_icon_info()
     if not app_icon.isNull():
         app.setWindowIcon(app_icon)
 
     # Crear e instanciar la ventana flotante
     window = FloatingClockTimerWindow()
+    window.setWindowTitle("Clock & Timer")
+    window.icon_path = icon_path
     if not app_icon.isNull():
         window.setWindowIcon(app_icon)
+        window.init_tray_icon(app_icon, icon_path)
     window.show()
 
     # Ejecutar el bucle de eventos principal de la aplicación

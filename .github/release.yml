@@ -1,0 +1,24 @@
+changelog:
+  categories:
+    - title: "🚀 Features & Enhancements"
+      labels:
+        - "feature"
+        - "enhancement"
+        - "feat"
+    - title: "🐛 Bug Fixes & Stability"
+      labels:
+        - "fix"
+        - "bug"
+        - "bugfix"
+    - title: "🎨 UI & Design Polish"
+      labels:
+        - "ui"
+        - "design"
+        - "style"
+    - title: "🧰 Maintenance & CI/CD"
+      labels:
+        - "maintenance"
+        - "ci"
+        - "documentation"
+        - "chore"
+        - "dependencies"

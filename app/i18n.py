@@ -39,6 +39,8 @@ TRANSLATIONS = {
         "dialog_title": "Configurar Temporizador",
         "dialog_min": "Minutos:",
         "dialog_sec": "Segundos:",
+        "dialog_ok": "Aceptar",
+        "dialog_cancel": "Cancelar",
         "lang_label": "🌐 Idioma:",
         "mini_hud_shrink": "Modo Mini-HUD (Compactar)",
         "mini_hud_expand": "Expandir a vista completa"
@@ -77,6 +79,8 @@ TRANSLATIONS = {
         "dialog_title": "Set Timer",
         "dialog_min": "Minutes:",
         "dialog_sec": "Seconds:",
+        "dialog_ok": "OK",
+        "dialog_cancel": "Cancel",
         "lang_label": "🌐 Lang:",
         "mini_hud_shrink": "Mini-HUD Mode (Compact)",
         "mini_hud_expand": "Expand to full view"

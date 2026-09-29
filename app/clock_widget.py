@@ -1,7 +1,6 @@
 from datetime import datetime
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PyQt6.QtCore import QTimer, Qt
-from PyQt6.QtGui import QFont
 from .i18n import i18n
 from .draggable_widgets import DualActionLabel
 

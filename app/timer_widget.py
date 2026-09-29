@@ -2,90 +2,217 @@ import subprocess
 import shutil
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-    QPushButton, QDialog, QSpinBox, QDialogButtonBox, QApplication
+    QPushButton, QDialog, QSpinBox, QApplication
 )
 from PyQt6.QtCore import QTimer, Qt
-from PyQt6.QtGui import QFont, QColor
 from .i18n import i18n
 from .draggable_widgets import DualActionLabel
 
 class TimeSetupDialog(QDialog):
-    """Diálogo modal para configurar minutos y segundos con precisión."""
+    """Diálogo modal moderno para configurar minutos y segundos con precisión."""
     def __init__(self, current_seconds, parent=None):
         super().__init__(parent)
         self.setWindowTitle(i18n.t("dialog_title"))
-        self.setFixedSize(240, 160)
+        self.setFixedSize(300, 270)
 
         self.setStyleSheet("""
             QDialog {
-                background-color: #1a1a24;
+                background-color: #14141c;
                 color: #ffffff;
-                border-radius: 12px;
-                border: 1px solid #333348;
+                border-radius: 16px;
+                border: 1.5px solid #2d2d3f;
             }
-            QLabel {
-                color: #e0e0ec;
-                font-size: 13px;
-                font-weight: bold;
+            QLabel.SectionTitle {
+                color: #8c8ca8;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+            /* Stepper Card unificado */
+            QWidget.StepperCard {
+                background-color: #1c1c28;
+                border: 1.5px solid #2f2f44;
+                border-radius: 12px;
             }
             QSpinBox {
-                background-color: #242434;
+                background-color: transparent;
                 color: #00d2ff;
-                border: 1px solid #444458;
-                border-radius: 6px;
-                font-size: 16px;
-                padding: 4px;
-                min-width: 60px;
+                border: none;
+                font-size: 30px;
+                font-weight: 800;
+                font-family: 'Monospace', 'Consolas', 'DejaVu Sans Mono';
+                qproperty-alignment: AlignCenter;
+                min-width: 80px;
+                max-width: 80px;
+                min-height: 44px;
             }
-            QPushButton {
+            QPushButton.StepperBtn {
+                background-color: transparent;
+                color: #7b7b99;
+                border: none;
+                font-size: 13px;
+                font-weight: bold;
+                min-width: 80px;
+                max-width: 80px;
+                min-height: 24px;
+                max-height: 24px;
+            }
+            QPushButton.StepperBtn:hover {
+                color: #00d2ff;
+                background-color: #262638;
+            }
+            QPushButton.StepperBtn#BtnUp {
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+            QPushButton.StepperBtn#BtnDown {
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+            /* Chips de presets rápidos */
+            QPushButton.PresetChip {
+                background-color: #1a1a26;
+                color: #9090aa;
+                border: 1px solid #2a2a3c;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 4px 8px;
+            }
+            QPushButton.PresetChip:hover {
+                background-color: #252538;
+                color: #00d2ff;
+                border-color: #00d2ff55;
+            }
+            /* Botón Aceptar primario */
+            QPushButton#BtnOk {
                 background-color: #00d2ff;
                 color: #0a0e17;
-                font-weight: bold;
-                border-radius: 6px;
-                padding: 6px 12px;
+                font-weight: 700;
+                font-size: 12px;
+                border: none;
+                border-radius: 8px;
+                padding: 7px 18px;
             }
-            QPushButton:hover {
+            QPushButton#BtnOk:hover {
                 background-color: #38e1ff;
+            }
+            /* Botón Cancelar secundario */
+            QPushButton#BtnCancel {
+                background-color: #222230;
+                color: #c0c0d4;
+                font-weight: 600;
+                font-size: 12px;
+                border: 1px solid #333346;
+                border-radius: 8px;
+                padding: 7px 16px;
+            }
+            QPushButton#BtnCancel:hover {
+                background-color: #2a2a3e;
+                color: #ffffff;
             }
         """)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(18, 16, 18, 16)
         layout.setSpacing(12)
 
-        # Contenedor de inputs
-        inputs_layout = QHBoxLayout()
-        inputs_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # Contenedor de diales (Minutos y Segundos)
+        dials_layout = QHBoxLayout()
+        dials_layout.setSpacing(12)
+        dials_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Minutos
-        v_min = QVBoxLayout()
-        lbl_min = QLabel(i18n.t("dialog_min"))
-        self.spin_min = QSpinBox()
-        self.spin_min.setRange(0, 999)
-        self.spin_min.setValue(current_seconds // 60)
-        v_min.addWidget(lbl_min)
-        v_min.addWidget(self.spin_min)
+        def create_stepper(title, max_val, cur_val):
+            container = QVBoxLayout()
+            container.setSpacing(4)
+            container.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Segundos
-        v_sec = QVBoxLayout()
-        lbl_sec = QLabel(i18n.t("dialog_sec"))
-        self.spin_sec = QSpinBox()
-        self.spin_sec.setRange(0, 59)
-        self.spin_sec.setValue(current_seconds % 60)
-        v_sec.addWidget(lbl_sec)
-        v_sec.addWidget(self.spin_sec)
+            lbl = QLabel(title)
+            lbl.setProperty("class", "SectionTitle")
+            lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            container.addWidget(lbl)
 
+            card = QWidget()
+            card.setProperty("class", "StepperCard")
+            card_layout = QVBoxLayout(card)
+            card_layout.setContentsMargins(0, 0, 0, 0)
+            card_layout.setSpacing(0)
 
-        inputs_layout.addLayout(v_min)
-        inputs_layout.addLayout(v_sec)
-        layout.addLayout(inputs_layout)
+            btn_up = QPushButton("▲")
+            btn_up.setObjectName("BtnUp")
+            btn_up.setProperty("class", "StepperBtn")
+            btn_up.setAutoRepeat(True)
+            btn_up.setAutoRepeatDelay(280)
+            btn_up.setAutoRepeatInterval(70)
 
-        # Botones de Aceptar / Cancelar
-        btn_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
-        )
-        btn_box.accepted.connect(self.accept)
-        btn_box.rejected.connect(self.reject)
-        layout.addWidget(btn_box)
+            spin = QSpinBox()
+            spin.setButtonSymbols(QSpinBox.ButtonSymbols.NoButtons)
+            spin.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            spin.setRange(0, max_val)
+            spin.setValue(cur_val)
+
+            btn_down = QPushButton("▼")
+            btn_down.setObjectName("BtnDown")
+            btn_down.setProperty("class", "StepperBtn")
+            btn_down.setAutoRepeat(True)
+            btn_down.setAutoRepeatDelay(280)
+            btn_down.setAutoRepeatInterval(70)
+
+            btn_up.clicked.connect(spin.stepUp)
+            btn_down.clicked.connect(spin.stepDown)
+
+            card_layout.addWidget(btn_up)
+            card_layout.addWidget(spin)
+            card_layout.addWidget(btn_down)
+
+            container.addWidget(card)
+            return container, spin
+
+        min_title = i18n.t("dialog_min").upper().replace(":", "")
+        sec_title = i18n.t("dialog_sec").upper().replace(":", "")
+
+        min_layout, self.spin_min = create_stepper(min_title, 999, current_seconds // 60)
+        sec_layout, self.spin_sec = create_stepper(sec_title, 59, current_seconds % 60)
+
+        sep_label = QLabel(":")
+        sep_label.setStyleSheet("color: #4a4a66; font-size: 30px; font-weight: bold; margin-top: 14px;")
+        sep_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        dials_layout.addLayout(min_layout)
+        dials_layout.addWidget(sep_label)
+        dials_layout.addLayout(sec_layout)
+        layout.addLayout(dials_layout)
+
+        # Chips de presets rápidos
+        chips_layout = QHBoxLayout()
+        chips_layout.setSpacing(6)
+        chips_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        for text, m in [("+1m", 1), ("+5m", 5), ("+15m", 15), ("00:00", 0)]:
+            chip = QPushButton(text)
+            chip.setProperty("class", "PresetChip")
+            if m == 0:
+                chip.clicked.connect(lambda: (self.spin_min.setValue(0), self.spin_sec.setValue(0)))
+            else:
+                chip.clicked.connect(lambda _, mins=m: self.spin_min.setValue(self.spin_min.value() + mins))
+            chips_layout.addWidget(chip)
+        layout.addLayout(chips_layout)
+
+        # Botones de Acción (Aceptar / Cancelar)
+        actions_layout = QHBoxLayout()
+        actions_layout.setSpacing(10)
+
+        btn_cancel = QPushButton(i18n.t("dialog_cancel"))
+        btn_cancel.setObjectName("BtnCancel")
+        btn_cancel.clicked.connect(self.reject)
+
+        btn_ok = QPushButton(i18n.t("dialog_ok"))
+        btn_ok.setObjectName("BtnOk")
+        btn_ok.clicked.connect(self.accept)
+
+        actions_layout.addWidget(btn_cancel)
+        actions_layout.addWidget(btn_ok)
+        layout.addLayout(actions_layout)
 
     def get_total_seconds(self):
         return (self.spin_min.value() * 60) + self.spin_sec.value()
@@ -152,24 +279,27 @@ class TimerWidget(QWidget):
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         normal_layout.addWidget(self.status_label)
 
-        # Controles principales: Iniciar/Pausar, Reiniciar y Borrar/Papelera
+        # Controles principales: Iniciar/Pausar, Reiniciar y Borrar/Papelera (iconos puros)
         controls_layout = QHBoxLayout()
-        controls_layout.setSpacing(6)
+        controls_layout.setSpacing(10)
         controls_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.btn_toggle = QPushButton(self.view_normal)
+        self.btn_toggle = QPushButton("▶", self.view_normal)
         self.btn_toggle.setProperty("class", "PrimaryAction")
         self.btn_toggle.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_toggle.setToolTip(i18n.t("btn_start"))
         self.btn_toggle.clicked.connect(self.toggle_timer)
 
-        self.btn_reset = QPushButton(self.view_normal)
+        self.btn_reset = QPushButton("↺", self.view_normal)
         self.btn_reset.setProperty("class", "SecondaryAction")
         self.btn_reset.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_reset.setToolTip(i18n.t("btn_reset"))
         self.btn_reset.clicked.connect(self.reset_timer)
 
-        self.btn_clear = QPushButton(self.view_normal)
+        self.btn_clear = QPushButton("🗑", self.view_normal)
         self.btn_clear.setProperty("class", "SecondaryAction")
         self.btn_clear.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_clear.setToolTip(i18n.t("btn_clear_tooltip"))
         self.btn_clear.clicked.connect(self.clear_time)
 
         controls_layout.addWidget(self.btn_toggle)
@@ -217,23 +347,28 @@ class TimerWidget(QWidget):
 
     def retranslate_ui(self):
         self.time_label.setToolTip(i18n.t("timer_click_tooltip"))
-        self.btn_reset.setText(i18n.t("btn_reset"))
-        self.btn_clear.setText("🗑 " + i18n.t("btn_clear"))
+        self.btn_reset.setText("↺")
+        self.btn_reset.setToolTip(i18n.t("btn_reset"))
+        self.btn_clear.setText("🗑")
         self.btn_clear.setToolTip(i18n.t("btn_clear_tooltip"))
         if self.is_running:
-            self.btn_toggle.setText(i18n.t("btn_pause"))
+            self.btn_toggle.setText("⏸")
+            self.btn_toggle.setToolTip(i18n.t("btn_pause"))
             self.btn_mini_toggle.setText("⏸")
             self.status_label.setText(i18n.t("timer_hint_running"))
         elif self.remaining_seconds < self.initial_seconds and self.remaining_seconds > 0:
-            self.btn_toggle.setText(i18n.t("btn_resume"))
+            self.btn_toggle.setText("▶")
+            self.btn_toggle.setToolTip(i18n.t("btn_resume"))
             self.btn_mini_toggle.setText("▶")
             self.status_label.setText(i18n.t("timer_hint_paused"))
         elif self.remaining_seconds == 0:
-            self.btn_toggle.setText(i18n.t("btn_start"))
+            self.btn_toggle.setText("▶")
+            self.btn_toggle.setToolTip(i18n.t("btn_start"))
             self.btn_mini_toggle.setText("▶")
             self.status_label.setText(i18n.t("timer_hint_idle") if self.initial_seconds == 0 else i18n.t("timer_hint_finished"))
         else:
-            self.btn_toggle.setText(i18n.t("btn_start"))
+            self.btn_toggle.setText("▶")
+            self.btn_toggle.setToolTip(i18n.t("btn_start"))
             self.btn_mini_toggle.setText("▶")
             self.status_label.setText(i18n.t("timer_hint_idle"))
 
@@ -265,7 +400,8 @@ class TimerWidget(QWidget):
         self.is_running = False
         self.initial_seconds = 0
         self.remaining_seconds = 0
-        self.btn_toggle.setText(i18n.t("btn_start"))
+        self.btn_toggle.setText("▶")
+        self.btn_toggle.setToolTip(i18n.t("btn_start"))
         self.btn_mini_toggle.setText("▶")
         self.btn_toggle.setStyleSheet("")
         self.btn_mini_toggle.setStyleSheet("")
@@ -301,7 +437,8 @@ class TimerWidget(QWidget):
             return
         self.is_running = True
         self.timer.start()
-        self.btn_toggle.setText(i18n.t("btn_pause"))
+        self.btn_toggle.setText("⏸")
+        self.btn_toggle.setToolTip(i18n.t("btn_pause"))
         self.btn_mini_toggle.setText("⏸")
         self.status_label.setText(i18n.t("timer_hint_running"))
         self.btn_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419;")
@@ -312,7 +449,8 @@ class TimerWidget(QWidget):
     def pause_timer(self):
         self.is_running = False
         self.timer.stop()
-        self.btn_toggle.setText(i18n.t("btn_resume"))
+        self.btn_toggle.setText("▶")
+        self.btn_toggle.setToolTip(i18n.t("btn_resume"))
         self.btn_mini_toggle.setText("▶")
         self.status_label.setText(i18n.t("timer_hint_paused"))
         self.btn_toggle.setStyleSheet("")
@@ -325,7 +463,8 @@ class TimerWidget(QWidget):
         self.timer.stop()
         self.is_running = False
         self.remaining_seconds = self.initial_seconds
-        self.btn_toggle.setText(i18n.t("btn_start"))
+        self.btn_toggle.setText("▶")
+        self.btn_toggle.setToolTip(i18n.t("btn_start"))
         self.btn_mini_toggle.setText("▶")
         self.btn_toggle.setStyleSheet("")
         self.btn_mini_toggle.setStyleSheet("")
@@ -341,7 +480,8 @@ class TimerWidget(QWidget):
         else:
             self.timer.stop()
             self.is_running = False
-            self.btn_toggle.setText(i18n.t("btn_start"))
+            self.btn_toggle.setText("▶")
+            self.btn_toggle.setToolTip(i18n.t("btn_start"))
             self.btn_mini_toggle.setText("▶")
             self.btn_toggle.setStyleSheet("")
             self.btn_mini_toggle.setStyleSheet("")
@@ -355,12 +495,16 @@ class TimerWidget(QWidget):
         # Sonido nativo del sistema
         QApplication.beep()
 
-        # Notificación de escritorio en Ubuntu/Linux
-        if shutil.which("notify-send"):
+        # Notificación de escritorio delegada a la ventana principal (multiplataforma con auto-cierre)
+        top_window = self.window()
+        if hasattr(top_window, "show_desktop_notification"):
+            top_window.show_desktop_notification(i18n.t("notif_title"), i18n.t("notif_msg"))
+        elif shutil.which("notify-send"):
             try:
                 subprocess.Popen([
                     "notify-send", 
-                    "-u", "critical", 
+                    "-a", "Clock & Timer",
+                    "-u", "normal", 
                     "-t", "5000", 
                     i18n.t("notif_title"), 
                     i18n.t("notif_msg")

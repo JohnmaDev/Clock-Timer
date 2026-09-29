@@ -18,15 +18,18 @@ QWidget#TitleBar {
     border-top-right-radius: 16px;
 }
 
-/* Botones de navegación (Reloj / Timer) */
+/* Botones de navegación (Reloj / Timer) con iconos */
 QPushButton.NavButton {
     background-color: transparent;
     color: #9292a8;
     border: none;
     border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 3px 8px;
+    font-size: 15px;
+    padding: 2px;
+    min-width: 28px;
+    max-width: 28px;
+    min-height: 26px;
+    max-height: 26px;
 }
 
 QPushButton.NavButton:hover {
@@ -43,15 +46,32 @@ QPushButton.NavButton:checked {
 /* Botones de control de ventana (Mini-HUD, Pin, Ajustes, Cerrar) */
 QPushButton.WindowControl {
     background-color: transparent;
-    color: #9292a8;
+    color: #a0a0ba;
     border: none;
     border-radius: 6px;
-    font-size: 13px;
     padding: 2px;
-    min-width: 24px;
-    max-width: 24px;
-    min-height: 24px;
-    max-height: 24px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+}
+
+QPushButton.WindowControl#PinButton {
+    font-size: 13px;
+}
+
+QPushButton.WindowControl#SettingsButton {
+    font-size: 16px;
+}
+
+QPushButton.WindowControl#MiniHudButton {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+QPushButton.WindowControl#CloseButton {
+    font-size: 14px;
+    font-weight: bold;
 }
 
 QPushButton.WindowControl:hover {
@@ -100,15 +120,19 @@ QLabel.SecondaryText {
     qproperty-alignment: AlignCenter;
 }
 
-/* Botones de acción del temporizador */
+/* Botones de acción del temporizador (Iconos minimalistas) */
 QPushButton.PrimaryAction {
     background-color: #00d2ff;
-    color: #0c1017;
-    font-weight: 700;
-    font-size: 13px;
+    color: #080c14;
+    font-weight: bold;
+    font-size: 16px;
     border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
+    border-radius: 19px;
+    min-width: 44px;
+    max-width: 44px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0;
 }
 
 QPushButton.PrimaryAction:hover {
@@ -120,18 +144,23 @@ QPushButton.PrimaryAction:pressed {
 }
 
 QPushButton.SecondaryAction {
-    background-color: #22222e;
-    color: #d1d1e0;
-    font-weight: 600;
-    font-size: 13px;
-    border: 1px solid #333344;
-    border-radius: 8px;
-    padding: 6px 12px;
+    background-color: #1a1a26;
+    color: #a0a0ba;
+    font-weight: bold;
+    font-size: 15px;
+    border: 1px solid #2d2d3e;
+    border-radius: 19px;
+    min-width: 38px;
+    max-width: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0;
 }
 
 QPushButton.SecondaryAction:hover {
-    background-color: #2d2d3d;
+    background-color: #272738;
     color: #ffffff;
+    border-color: #404058;
 }
 
 QPushButton.PrimaryAction[mini="true"] {
@@ -152,9 +181,9 @@ QPushButton.PresetButton {
     color: #9d9db5;
     border: 1px solid #282837;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 3px 6px;
+    padding: 2px 4px;
 }
 
 QPushButton.PresetButton:hover {
@@ -173,16 +202,16 @@ QWidget#OpacityBar {
 
 QLabel#OpacityLabel {
     color: #9d9db5;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
 }
 
 QLabel#OpacityValue {
     color: #00d2ff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     font-family: 'Monospace', 'Consolas', 'DejaVu Sans Mono';
-    min-width: 32px;
+    min-width: 28px;
 }
 
 QPushButton.OpacityPreset {
@@ -192,7 +221,7 @@ QPushButton.OpacityPreset {
     border-radius: 4px;
     font-size: 10px;
     font-weight: 600;
-    padding: 2px 5px;
+    padding: 2px 4px;
 }
 
 QPushButton.OpacityPreset:hover {
@@ -206,7 +235,7 @@ QWidget#SettingsPanel {
     background-color: #1a1a26;
     border: 1px solid #2b2b3d;
     border-radius: 10px;
-    padding: 6px 10px;
+    padding: 4px 6px;
 }
 
 QLabel#SettingsLabel {
