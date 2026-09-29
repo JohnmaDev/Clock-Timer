@@ -42,5 +42,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/JohnmaDev/Clock-Timer.git
-        tag: v1.0.0
-        commit: 77c193ee7e41b79402105651912d7c39e737d142
+        tag: v1.2.0
+        commit: 3428028ec49c93ee71a0c13ff00f85040752a986
