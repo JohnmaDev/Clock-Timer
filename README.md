@@ -1,4 +1,4 @@
-# 🕒 Clock & Timer (Reloj & Temporizador Flotante)
+# Clock & Timer
 
 <p align="center">
   <img src="assets/icons/io.github.JohnmaDev.Clock-Timer.png" width="128" height="128" alt="Clock & Timer Logo" />
@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>A modern, minimalist, always-on-top desktop clock and countdown timer widget.</strong><br>
-  <em>Diseñado para Linux (Ubuntu, Fedora, Arch) y 100% compatible con Windows.</em>
+  <em>Diseñado para Linux (Ubuntu, Fedora, Arch) y compatible con Windows.</em>
 </p>
 
 <p align="center">
@@ -15,12 +15,11 @@
   <img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue.svg?style=flat-square" alt="Platform Support">
   <img src="https://img.shields.io/badge/Python-3.10%2B-yellow.svg?style=flat-square" alt="Python Version">
   <img src="https://img.shields.io/badge/GUI-PyQt6-blueviolet.svg?style=flat-square" alt="PyQt6">
-  <a href="https://github.com/flathub/flathub/pull/10413"><img src="https://img.shields.io/badge/Flatpak-Flathub%20PR%20%2310413-4a90e2.svg?style=flat-square" alt="Flathub PR #10413"></a>
 </p>
 
 ---
 
-## 📸 Screenshots / Capturas
+## Screenshots
 
 <p align="center">
   <img src="assets/screenshots/preview_clock.png" width="48%" alt="Clock View" />
@@ -34,7 +33,7 @@
   <img src="assets/screenshots/preview_mini_hud.png" width="60%" alt="Mini-HUD Focus Mode" />
 </p>
 <p align="center">
-  <em>Mini-HUD Focus Mode (Ultra-compact 230x75 px floating strip)</em>
+  <em>Mini-HUD Focus Mode (Ultra-compact 230x92 px floating strip)</em>
 </p>
 
 <p align="center">
@@ -47,64 +46,66 @@
 
 ---
 
-## ✨ Features / Características
+## Features
 
-- 📌 **Always on Top (Siempre al Frente)**: Permanece visible por encima de navegadores, editores de código, IDEs y juegos. Se activa/desactiva al instante con el botón de chincheta (`📌`).
-- 🪟 **Frameless & Ultra-Compact (Sin Marcos y Redimensionable)**: Interfaz oscura moderna sin barras toscas del sistema. Redimensionable desde sus 4 bordes o esquina inferior (mínimo ultra-compacto: 235 &times; 210 px).
-- ⚡ **Ultra-Lightweight (~87 MB RAM, <0.2% CPU)**: Rendimiento nativo Qt6 sin el sobrecosto de Chromium ni frameworks web pesados. 8-10 veces más ligero que herramientas en Electron.
-- 🕒 **Minimalist Clock Mode (Modo Reloj)**: Visualización limpia de hora con segundos y fecha completa localizada. Clic en los dígitos para alternar al instante entre **formato 24h** y **formato 12h AM/PM**.
-- ⏳ **Minimalist Timer Mode (Modo Temporizador)**: 
-  - **Controles por iconos limpios**: Iniciar/Pausar (`▶`/`⏸`), Reiniciar (`↺`) y Borrar/Restablecer (`🗑`) para evitar recortes de texto en tamaños pequeños.
-  - **Presets rápidos**: Botones inmediatos de `+1m`, `+5m`, `+15m`, `+25m (Pomodoro)` y `+1h`.
-  - **Selector dial de precisión**: Clic en los números para abrir el configurador visual con botones paso a paso (`▲`/`▼`) y chips rápidos (`+1m`, `+5m`, `+15m`, `00:00`).
-- 🔍 **Mini-HUD Focus Mode**:
-  - Modo ultra-reducido de 230 &times; 75 px que ocupa el mínimo espacio en pantalla.
+- **Always on Top**: Permanece visible por encima de navegadores, editores de código, IDEs y juegos. Se activa o desactiva con el botón de fijación en la cabecera.
+- **Wayland and X11 Support**: Detección y fallback automático a XWayland (`QT_QPA_PLATFORM="xcb;wayland"`) para garantizar compatibilidad con el modo siempre al frente en escritorios Wayland modernos.
+- **Frameless and Ultra-Compact**: Interfaz oscura moderna sin barras toscas del sistema. Redimensionable desde sus cuatro bordes o esquina inferior (mínimo: 235 x 210 px).
+- **Ultra-Lightweight** (~87 MB RAM, <0.2% CPU): Rendimiento nativo Qt6 sin el sobrecosto de Chromium ni frameworks web pesados. Significativamente más ligero que herramientas basadas en Electron.
+- **Clock Mode**: Visualización limpia de hora con segundos y fecha completa localizada. Clic en los dígitos para alternar al instante entre formato 24h y formato 12h AM/PM.
+- **Timer Mode**:
+  - Controles minimalistas por iconos: Iniciar/Pausar (`▶`/`⏸`), Reiniciar (`↺`) y Borrar/Restablecer (`🗑`).
+  - Presets rápidos: Botones inmediatos de `+1m`, `+5m`, `+15m`, `+25m (Pomodoro)` y `+1h`.
+  - Selector dial de precisión: Clic en los números para abrir el configurador visual con botones paso a paso (`▲`/`▼`) y chips rápidos (`+1m`, `+5m`, `+15m`, `00:00`).
+- **Mini-HUD Focus Mode**:
+  - Tira horizontal ultra-compacta de 230 x 92 px que ocupa el mínimo espacio en pantalla.
+  - Transición fluida con animaciones de morphing geométrico y desvanecimiento de controles inspiradas en macOS y Ubuntu.
   - Preserva la posición exacta donde colocaste la ventana sin saltar al centro al restaurarla.
-  - Atajo rápido: Tecla `M` o `F`, o botón `↙` en la cabecera.
-- 🔔 **Smart Non-Intrusive Desktop Notifications**:
-  - En Linux: Alarma de escritorio con nombre de la app (`Clock & Timer`), icono oficial y **auto-cierre a los 5 segundos** (no se queda congelada en pantalla).
-  - En Windows: Notificaciones nativas integradas con el Centro de Actividades (Action Center).
-  - Alerta combinada sonora (`beep` del sistema) y parpadeo visual llamativo.
-- 🗔 **System Tray Integration (Bandeja del Sistema)**:
-  - Icono residente en la bandeja (`^`) para mostrar u ocultar la ventana, alternar rápidamente entre Reloj y Temporizador o cerrar la app.
-- ◐ **Interactive Opacity Control (Transparencia Interactiva)**:
+  - Atajo rápido: Tecla `M` o `F`, o botón en la cabecera.
+- **Desktop Notifications**:
+  - En Linux: Alarma de escritorio con nombre de aplicación (`Clock & Timer`), icono oficial y auto-cierre a los 5 segundos.
+  - En Windows: Notificaciones nativas integradas con el Action Center.
+  - Alerta combinada sonora (beep del sistema) y parpadeo visual.
+- **System Tray Integration**:
+  - Icono residente en la bandeja del sistema para mostrar u ocultar la ventana, alternar entre modos o salir limpiamente.
+- **Interactive Opacity Control**:
   - Barra deslizante de opacidad del 30% al 100% con saltos rápidos (`50%`, `75%`, `100%`).
-  - **Rueda del ratón (Mouse Wheel)**: Gira la rueda del mouse en cualquier parte de la ventana para ajustar la transparencia al vuelo.
-- 🌐 **Bilingual Support (Español / English)**:
+  - Rueda del ratón: Gira la rueda del mouse en cualquier parte de la ventana para ajustar la transparencia al vuelo.
+- **Bilingual Support (Español / English)**:
   - Selector instantáneo en el panel de ajustes con persistencia de preferencias (`QSettings`).
 
 ---
 
-## 🕹️ Keyboard & Mouse Controls / Atajos
+## Keyboard and Mouse Controls
 
-| Action / Acción | Control / Gesto |
+| Action | Control / Gesture |
 | :--- | :--- |
-| **Move window** / Mover ventana | Clic y arrastre desde la cabecera, pestañas o dígitos del reloj |
-| **Resize** / Redimensionar | Arrastrar cualquiera de los 4 bordes o la esquina inferior derecha |
-| **Adjust opacity on the fly** / Opacidad al vuelo | **Rueda del mouse** en cualquier parte de la ventana |
-| **Toggle Mini-HUD Mode** / Modo Mini-HUD | Tecla `M`, tecla `F` o botón `↙` / `⤢` |
-| **Start / Pause Timer** / Iniciar o pausar | Tecla `Space` o botón `▶`/`⏸` |
-| **Reset / Clear** / Reiniciar o borrar | Botones `↺` y `🗑` |
-| **Switch Clock / Timer tab** / Alternar pestaña | Tecla `Tab` o botones `🕒` / `⏳` |
-| **Toggle Settings Panel** / Panel de ajustes | Botón `⚙` |
-| **Toggle Always on Top** / Fijar al frente | Botón `📌` |
-| **System Tray** / Bandeja del sistema | Clic izquierdo en el icono de la bandeja para mostrar/ocultar |
-| **Close app** / Cerrar | Tecla `Escape` o botón `✕` |
+| **Move window** | Clic y arrastre desde la cabecera, pestañas o dígitos del reloj |
+| **Resize** | Arrastrar cualquiera de los 4 bordes o la esquina inferior derecha |
+| **Adjust opacity on the fly** | Rueda del ratón en cualquier parte de la ventana |
+| **Toggle Mini-HUD Mode** | Tecla `M`, tecla `F` o botón en la cabecera |
+| **Start / Pause Timer** | Tecla `Space` o botón de reproducción / pausa |
+| **Reset / Clear** | Botón de reinicio o papelera |
+| **Switch Clock / Timer tab** | Tecla `Tab` o botones de navegación |
+| **Toggle Settings Panel** | Botón de ajustes en la cabecera |
+| **Toggle Always on Top** | Botón de fijación en la cabecera |
+| **System Tray** | Clic en el icono de la bandeja para mostrar u ocultar |
+| **Close app** | Tecla `Escape` o botón de cerrar |
 
 ---
 
-## 🚀 Installation & Running / Instalación y Uso
+## Installation and Usage
 
-### 🐧 Linux (Ubuntu / Debian / Fedora / Arch)
+### Linux (Ubuntu / Debian / Fedora / Arch)
 
-#### Option 1: Quick Launcher (Recomendado)
+#### Option 1: Quick Launcher (Recommended)
 ```bash
 git clone https://github.com/JohnmaDev/Clock-Timer.git
 cd Clock-Timer
 chmod +x run.sh
 ./run.sh
 ```
-*(Crea automáticamente el entorno virtual e instala dependencias si es necesario).*
+El script `run.sh` valida automáticamente la versión del entorno Python (incluyendo compatibilidad con Ubuntu 26.04 y Python 3.14), recrea el entorno virtual si es necesario e inicia con soporte XWayland automático.
 
 #### Option 2: Run with Python venv
 ```bash
@@ -121,20 +122,10 @@ cp io.github.JohnmaDev.Clock-Timer.desktop ~/.local/share/applications/
 
 ---
 
-### 📦 Flatpak & Flathub
-Esta aplicación sigue las directrices oficiales de empaquetado de Freedesktop y Flathub:
-- **App ID**: `io.github.JohnmaDev.Clock-Timer`
-- **Metadata**: [io.github.JohnmaDev.Clock-Timer.metainfo.xml](io.github.JohnmaDev.Clock-Timer.metainfo.xml)
-- **Manifest**: [io.github.JohnmaDev.Clock-Timer.yaml](io.github.JohnmaDev.Clock-Timer.yaml)
+### Windows
 
-Para seguir el progreso de aprobación oficial, visita [Flathub PR #10413](https://github.com/flathub/flathub/pull/10413).
-
----
-
-### 🪟 Windows
-
-#### 📦 Descargar Ejecutable Portátil (`Clock & Timer.exe`)
-¡No necesitas tener Python instalado! Descarga el ejecutable precompilado **`Clock & Timer.exe`** directamente desde la página de [GitHub Releases](https://github.com/JohnmaDev/Clock-Timer/releases).
+#### Portable Windows Executable
+Descarga el ejecutable precompilado **`Clock & Timer.exe`** directamente desde la página de [GitHub Releases](https://github.com/JohnmaDev/Clock-Timer/releases).
 
 O compílalo tú mismo con PyInstaller:
 ```cmd
@@ -144,7 +135,7 @@ pyinstaller --onefile --windowed --name "Clock & Timer" --icon "icon.ico" --add-
 
 ---
 
-## 🤖 Continuous Integration / GitHub Actions
+## Continuous Integration
 
 El repositorio cuenta con integración continua automatizada en [`.github/workflows/release.yml`](.github/workflows/release.yml):
 1. Valida los metadatos AppStream y `.desktop` con `appstreamcli` y `desktop-file-validate`.
@@ -155,7 +146,7 @@ El repositorio cuenta con integración continua automatizada en [`.github/workfl
 
 ---
 
-## 📂 Project Structure / Estructura del Proyecto
+## Project Structure
 
 ```text
 Clock-Timer/
@@ -174,7 +165,7 @@ Clock-Timer/
 ├── assets/
 │   ├── branding/                       # Design concepts & exploration artwork
 │   ├── icons/                          # Application icon (512x512 circular PNG)
-│   └── screenshots/                    # Updated UI preview screenshots
+│   └── screenshots/                    # UI preview screenshots
 ├── CHANGELOG.md                        # Standardized release changelog
 ├── io.github.JohnmaDev.Clock-Timer.desktop     # FreeDesktop desktop entry
 ├── io.github.JohnmaDev.Clock-Timer.metainfo.xml# AppStream 1.0 metadata
@@ -189,8 +180,8 @@ Clock-Timer/
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE) for more details.
 
-Developed with ❤️ by [JohnmaDev](https://github.com/JohnmaDev).
+Developed by [JohnmaDev](https://github.com/JohnmaDev).

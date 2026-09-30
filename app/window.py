@@ -4,9 +4,12 @@ import subprocess
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
     QStackedWidget, QSizeGrip, QLabel, QSlider,
-    QSystemTrayIcon, QMenu, QApplication
+    QSystemTrayIcon, QMenu, QApplication, QGraphicsOpacityEffect
 )
-from PyQt6.QtCore import Qt, QEvent, QTimer, QSize
+from PyQt6.QtCore import (
+    Qt, QEvent, QTimer, QSize, QPropertyAnimation, 
+    QEasingCurve, QRect, QParallelAnimationGroup, pyqtProperty
+)
 from PyQt6.QtGui import QCursor
 
 
@@ -35,10 +38,13 @@ class FloatingClockTimerWindow(QWidget):
         self.always_on_top = True
         self.old_pos = None
         self.is_mini_mode = False
+        self.is_animating_hud = False
+        self._controls_opacity = 1.0
         self.icon_path = None
 
         self.init_window_flags()
         self.init_ui()
+        self.init_animations()
 
     def init_window_flags(self):
         """Configura los flags de ventana para que sea flotante y sin marco feo."""
@@ -71,8 +77,8 @@ class FloatingClockTimerWindow(QWidget):
         root_layout.addWidget(self.container)
 
         container_layout = QVBoxLayout(self.container)
-        container_layout.setContentsMargins(10, 8, 10, 8)
-        container_layout.setSpacing(4)
+        container_layout.setContentsMargins(8, 6, 8, 6)
+        container_layout.setSpacing(2)
 
         # 1. Barra de título y controles
         self.title_bar = QWidget(self.container)
@@ -102,13 +108,6 @@ class FloatingClockTimerWindow(QWidget):
         title_layout.addWidget(self.btn_timer_tab)
         title_layout.addStretch()
 
-        # Botón Modo Mini-HUD / Enfoque (en normal muestra ↙ para compactar)
-        self.btn_mini_hud = QPushButton("↙", self.title_bar)
-        self.btn_mini_hud.setProperty("class", "WindowControl")
-        self.btn_mini_hud.setObjectName("MiniHudButton")
-        self.btn_mini_hud.clicked.connect(self.toggle_mini_hud)
-        title_layout.addWidget(self.btn_mini_hud)
-
         # Botón Pin (Always on top toggle)
         self.btn_pin = QPushButton("📌", self.title_bar)
         self.btn_pin.setProperty("class", "WindowControl")
@@ -126,6 +125,13 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_settings.setCheckable(True)
         self.btn_settings.clicked.connect(self.toggle_settings_panel)
         title_layout.addWidget(self.btn_settings)
+
+        # Botón Modo Mini-HUD / Enfoque (anclado a la derecha junto al botón cerrar)
+        self.btn_mini_hud = QPushButton("↙", self.title_bar)
+        self.btn_mini_hud.setProperty("class", "WindowControl")
+        self.btn_mini_hud.setObjectName("MiniHudButton")
+        self.btn_mini_hud.clicked.connect(self.toggle_mini_hud)
+        title_layout.addWidget(self.btn_mini_hud)
 
         # Botón Cerrar
         self.btn_close = QPushButton("✕", self.title_bar)
@@ -225,6 +231,21 @@ class FloatingClockTimerWindow(QWidget):
         bottom_bar.addWidget(self.size_grip)
         container_layout.addLayout(bottom_bar)
 
+        # Configurar efectos de opacidad para transiciones suaves y sutiles de los iconos
+        self.fade_widgets = [
+            self.btn_clock_tab,
+            self.btn_timer_tab,
+            self.btn_pin,
+            self.btn_settings,
+            self.size_grip
+        ]
+        self.fade_effects = []
+        for w in self.fade_widgets:
+            eff = QGraphicsOpacityEffect(w)
+            eff.setOpacity(1.0)
+            w.setGraphicsEffect(eff)
+            self.fade_effects.append(eff)
+
         # 6. Guardián de capa superior contra reordenamiento de Aero Snap
         self.keep_top_timer = QTimer(self)
         self.keep_top_timer.setInterval(1200)
@@ -258,62 +279,120 @@ class FloatingClockTimerWindow(QWidget):
         self.btn_timer_tab.setChecked(True)
         self.stack.setCurrentWidget(self.timer_widget)
 
+    @pyqtProperty(float)
+    def controls_opacity(self):
+        """Propiedad animable para la opacidad de los controles e iconos."""
+        return getattr(self, "_controls_opacity", 1.0)
+
+    @controls_opacity.setter
+    def controls_opacity(self, value):
+        self._controls_opacity = max(0.0, min(1.0, float(value)))
+        for eff in getattr(self, "fade_effects", []):
+            eff.setOpacity(self._controls_opacity)
+        if hasattr(self, "clock_widget") and hasattr(self.clock_widget, "set_secondary_opacity"):
+            self.clock_widget.set_secondary_opacity(self._controls_opacity)
+        if hasattr(self, "timer_widget") and hasattr(self.timer_widget, "set_secondary_opacity"):
+            self.timer_widget.set_secondary_opacity(self._controls_opacity)
+
+    def init_animations(self):
+        """Inicializa animaciones fluidas paralelas para la geometría y el desvanecimiento de iconos."""
+        self.hud_anim_group = QParallelAnimationGroup(self)
+
+        self.hud_geom_anim = QPropertyAnimation(self, b"geometry", self.hud_anim_group)
+        self.hud_geom_anim.setDuration(240)
+        self.hud_geom_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+
+        self.hud_fade_anim = QPropertyAnimation(self, b"controls_opacity", self.hud_anim_group)
+        self.hud_fade_anim.setDuration(240)
+        self.hud_fade_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+
+        self.hud_anim_group.addAnimation(self.hud_geom_anim)
+        self.hud_anim_group.addAnimation(self.hud_fade_anim)
+        self.hud_anim_group.finished.connect(self._on_hud_anim_finished)
+
+    def _on_hud_anim_finished(self):
+        """Ajusta restricciones y restaura controles al concluir la transición animada."""
+        self.is_animating_hud = False
+        if getattr(self, "is_mini_mode", False):
+            # En modo mini: flecha ↗ para expandir y volver al tamaño normal
+            self.btn_mini_hud.setText("↗")
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_expand"))
+            # Ocultar los widgets ya desvanecidos
+            for w in self.fade_widgets:
+                w.hide()
+            self.timer_widget.set_mini_mode(True)
+            self.clock_widget.set_mini_mode(True)
+            self.setMinimumSize(200, 80)
+            self.resize(230, 92)
+        else:
+            # En modo normal: flecha ↙ para contraer al modo mini
+            self.btn_mini_hud.setText("↙")
+            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_shrink"))
+            # Asegurar opacidad al 100% y fijar geometría final
+            self.controls_opacity = 1.0
+            for w in self.fade_widgets:
+                w.show()
+            self.setMinimumSize(235, 210)
+            if hasattr(self, "target_normal_geom") and self.target_normal_geom:
+                self.setGeometry(self.target_normal_geom)
+
+        # Actualizar tipografía al estado estático final
+        if hasattr(self, "clock_widget"):
+            self.clock_widget.resizeEvent(None)
+        if hasattr(self, "timer_widget"):
+            self.timer_widget.resizeEvent(None)
+
     def toggle_mini_hud(self):
-        """Alterna entre el Modo Normal y el Modo Mini-HUD / Enfoque compacto."""
+        """Alterna entre el Modo Normal y el Modo Mini-HUD con una transición suave y sutil estilo macOS / Ubuntu."""
+        if hasattr(self, "hud_anim_group") and self.hud_anim_group.state() == QParallelAnimationGroup.State.Running:
+            self.hud_anim_group.stop()
+
         self.is_mini_mode = not getattr(self, "is_mini_mode", False)
+        self.is_animating_hud = True
+
         if self.is_mini_mode:
             # Guardamos el tamaño que tenía en la vista completa (no la posición)
             self.saved_size = self.size()
             cur_pos = self.pos()
 
-            # Ocultar controles de la vista completa
-            self.btn_clock_tab.hide()
-            self.btn_timer_tab.hide()
-            self.btn_pin.hide()
-            self.btn_settings.hide()
-            self.settings_panel.hide()
-            self.size_grip.hide()
+            if hasattr(self, "settings_panel") and self.settings_panel.isVisible():
+                self.settings_panel.hide()
+                self.btn_settings.setChecked(False)
 
-            # En modo mini: flecha ↗ para expandir y volver al tamaño normal
-            self.btn_mini_hud.setText("↗")
-            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_expand"))
+            # Relajar temporalmente el mínimo para permitir la animación de encogimiento suave
+            self.setMinimumSize(100, 40)
+            target_rect = QRect(cur_pos.x(), cur_pos.y(), 230, 92)
 
-            self.timer_widget.set_mini_mode(True)
-            self.clock_widget.set_mini_mode(True)
+            # Animación de geometría
+            self.hud_geom_anim.setDuration(230)
+            self.hud_geom_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+            self.hud_geom_anim.setStartValue(self.geometry())
+            self.hud_geom_anim.setEndValue(target_rect)
 
-            self.title_bar.layout().setContentsMargins(4, 2, 4, 0)
-            self.container.layout().setContentsMargins(6, 2, 6, 4)
-            self.container.layout().setSpacing(0)
+            # Desvanecimiento gradual de salida de los iconos (1.0 -> 0.0)
+            self.hud_fade_anim.setDuration(160)
+            self.hud_fade_anim.setEasingCurve(QEasingCurve.Type.OutQuad)
+            self.hud_fade_anim.setStartValue(self.controls_opacity)
+            self.hud_fade_anim.setEndValue(0.0)
 
-            self.setMinimumSize(200, 68)
-            self.resize(230, 75)
-            self.move(cur_pos)
+            self.hud_anim_group.start()
         else:
-            self.btn_clock_tab.show()
-            self.btn_timer_tab.show()
-            self.btn_pin.show()
-            self.btn_settings.show()
-            self.size_grip.show()
-
-            # En modo normal: flecha ↙ para contraer al modo mini
-            self.btn_mini_hud.setText("↙")
-            self.btn_mini_hud.setToolTip(i18n.t("mini_hud_shrink"))
+            # Mostrar widgets con opacidad inicial 0.0 para que emerjan gradualmente junto con el crecimiento
+            self.controls_opacity = 0.0
+            for w in self.fade_widgets:
+                w.show()
 
             self.timer_widget.set_mini_mode(False)
             self.clock_widget.set_mini_mode(False)
 
-            self.title_bar.layout().setContentsMargins(2, 2, 2, 2)
-            self.container.layout().setContentsMargins(10, 8, 10, 8)
-            self.container.layout().setSpacing(4)
-
-            self.setMinimumSize(235, 210)
+            self.setMinimumSize(100, 40)
 
             # Restaurar el tamaño manteniendo la posición actual donde el usuario colocó la ventana
             target_size = getattr(self, "saved_size", QSize(255, 230))
             cur_x = self.x()
             cur_y = self.y()
-            w = target_size.width()
-            h = target_size.height()
+            w = max(235, target_size.width())
+            h = max(210, target_size.height())
 
             # Asegurar que no quede fuera de los límites de la pantalla si se expande pegado al borde
             screen = self.screen().availableGeometry() if self.screen() else None
@@ -327,7 +406,21 @@ class FloatingClockTimerWindow(QWidget):
                 if cur_y < screen.top():
                     cur_y = screen.top()
 
-            self.setGeometry(cur_x, cur_y, w, h)
+            self.target_normal_geom = QRect(cur_x, cur_y, w, h)
+
+            # Animación de expansión geométrica
+            self.hud_geom_anim.setDuration(240)
+            self.hud_geom_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+            self.hud_geom_anim.setStartValue(self.geometry())
+            self.hud_geom_anim.setEndValue(self.target_normal_geom)
+
+            # Animación de aparición suave y sutil de los iconos (0.0 -> 1.0)
+            self.hud_fade_anim.setDuration(240)
+            self.hud_fade_anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+            self.hud_fade_anim.setStartValue(0.0)
+            self.hud_fade_anim.setEndValue(1.0)
+
+            self.hud_anim_group.start()
 
     def init_tray_icon(self, icon, icon_path=None):
         """Inicializa el icono en la bandeja del sistema (System Tray / flecha ^)."""

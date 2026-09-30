@@ -2,7 +2,8 @@ import subprocess
 import shutil
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-    QPushButton, QDialog, QSpinBox, QApplication
+    QPushButton, QDialog, QSpinBox, QApplication,
+    QGraphicsOpacityEffect
 )
 from PyQt6.QtCore import QTimer, Qt
 from .i18n import i18n
@@ -243,6 +244,10 @@ class TimerWidget(QWidget):
 
         # --- VISTA NORMAL ---
         self.view_normal = QWidget(self)
+        self.normal_opacity_eff = QGraphicsOpacityEffect(self.view_normal)
+        self.normal_opacity_eff.setOpacity(1.0)
+        self.view_normal.setGraphicsEffect(self.normal_opacity_eff)
+
         normal_layout = QVBoxLayout(self.view_normal)
         normal_layout.setContentsMargins(10, 6, 10, 6)
         normal_layout.setSpacing(4)
@@ -441,8 +446,8 @@ class TimerWidget(QWidget):
         self.btn_toggle.setToolTip(i18n.t("btn_pause"))
         self.btn_mini_toggle.setText("⏸")
         self.status_label.setText(i18n.t("timer_hint_running"))
-        self.btn_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419;")
-        self.btn_mini_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419;")
+        self.btn_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419; border-radius: 19px;")
+        self.btn_mini_toggle.setStyleSheet("background-color: #ff9f1c; color: #141419; border-radius: 13px;")
         self.time_label.setStyleSheet("color: #00d2ff;")
         self.mini_time_label.setStyleSheet("color: #00d2ff;")
 
@@ -555,6 +560,11 @@ class TimerWidget(QWidget):
         if len(text) != len(old_text):
             self.resizeEvent(None)
 
+    def set_secondary_opacity(self, opacity: float):
+        """Ajusta la opacidad de los controles normales del temporizador durante transiciones."""
+        if hasattr(self, "normal_opacity_eff"):
+            self.normal_opacity_eff.setOpacity(opacity)
+
     def set_mini_mode(self, enabled: bool):
         self.is_mini_mode = enabled
         self.view_normal.setVisible(not enabled)
@@ -566,23 +576,23 @@ class TimerWidget(QWidget):
         """Ajusta proporcionalmente el tamaño de fuente según el tamaño de la ventana."""
         if event is not None:
             super().resizeEvent(event)
+
+        win = self.window()
+        if getattr(win, "is_animating_hud", False):
+            return
+
         w = self.width()
         h = self.height()
         if getattr(self, "is_mini_mode", False):
             text = self.mini_time_label.text()
-            if len(text) > 5:
-                # Tiempo largo con horas (ej: 01:39:51 tiene 8 caracteres) -> tamaño legible y balanceado
-                font_size = max(15, min(20, int(h * 0.45)))
-            else:
-                # Tiempo normal (ej: 05:00 tiene 5 caracteres)
-                font_size = max(18, min(26, int(h * 0.55)))
+            font_size = 20 if len(text) > 5 else 24
             font = self.mini_time_label.font()
             font.setPointSize(font_size)
             font.setBold(True)
             self.mini_time_label.setFont(font)
         else:
             base_size = min(w, h)
-            font_size = max(18, int(base_size / 5.5))
+            font_size = max(22, min(32, int(base_size / 6.5)))
             font = self.time_label.font()
             font.setPointSize(font_size)
             font.setBold(True)

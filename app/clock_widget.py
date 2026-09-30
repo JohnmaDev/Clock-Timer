@@ -1,5 +1,5 @@
 from datetime import datetime
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QGraphicsOpacityEffect
 from PyQt6.QtCore import QTimer, Qt
 from .i18n import i18n
 from .draggable_widgets import DualActionLabel
@@ -39,6 +39,12 @@ class ClockWidget(QWidget):
         self.format_indicator = QLabel(self)
         self.format_indicator.setProperty("class", "SecondaryText")
         self.format_indicator.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Efectos de opacidad para apariciones y desvanecimientos suaves
+        self.date_opacity_eff = QGraphicsOpacityEffect(self.date_label)
+        self.date_label.setGraphicsEffect(self.date_opacity_eff)
+        self.format_opacity_eff = QGraphicsOpacityEffect(self.format_indicator)
+        self.format_indicator.setGraphicsEffect(self.format_opacity_eff)
 
         layout.addStretch()
         layout.addWidget(self.time_label)
@@ -84,6 +90,13 @@ class ClockWidget(QWidget):
         self.time_label.setText(time_str)
         self.date_label.setText(date_str)
 
+    def set_secondary_opacity(self, opacity: float):
+        """Ajusta la opacidad de los elementos secundarios (fecha y formato) durante transiciones."""
+        if hasattr(self, "date_opacity_eff"):
+            self.date_opacity_eff.setOpacity(opacity)
+        if hasattr(self, "format_opacity_eff"):
+            self.format_opacity_eff.setOpacity(opacity)
+
     def set_mini_mode(self, enabled: bool):
         self.is_mini_mode = enabled
         self.date_label.setVisible(not enabled)
@@ -99,13 +112,18 @@ class ClockWidget(QWidget):
         """Ajusta proporcionalmente el tamaño de fuente según el tamaño de la ventana."""
         if event is not None:
             super().resizeEvent(event)
+
+        win = self.window()
+        if getattr(win, "is_animating_hud", False):
+            return
+
         w = self.width()
         h = self.height()
         if getattr(self, "is_mini_mode", False):
-            font_size = max(20, min(42, int(h * 0.55)))
+            font_size = 24
         else:
             base_size = min(w, h)
-            font_size = max(18, min(36, int(base_size / 6.8)))
+            font_size = max(20, min(30, int(base_size / 7.2)))
 
         font = self.time_label.font()
         font.setPointSize(font_size)

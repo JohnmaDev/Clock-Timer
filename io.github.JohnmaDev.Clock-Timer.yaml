@@ -15,7 +15,7 @@ build-options:
 
 finish-args:
   - --share=ipc
-  - --socket=fallback-x11
+  - --socket=x11
   - --socket=wayland
   - --device=dri
   - --talk-name=org.freedesktop.Notifications
@@ -42,5 +42,4 @@ modules:
     sources:
       - type: git
         url: https://github.com/JohnmaDev/Clock-Timer.git
-        tag: v1.2.0
-        commit: 3428028ec49c93ee71a0c13ff00f85040752a986
+        tag: v1.3.0

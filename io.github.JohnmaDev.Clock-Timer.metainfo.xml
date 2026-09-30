@@ -55,6 +55,18 @@
   </screenshots>
 
   <releases>
+    <release version="1.3.0" date="2026-09-29">
+      <description>
+        <p>Wayland support, Ubuntu 26.04 compatibility, and fluid UI animations:</p>
+        <ul>
+          <li>Add automatic XWayland fallback (QT_QPA_PLATFORM="xcb;wayland") for full always-on-top window support under Wayland</li>
+          <li>Auto-detection and automatic virtualenv repair for Ubuntu 26.04 and Python 3.14 upgrades in run.sh</li>
+          <li>Smooth macOS and Ubuntu style geometry morphing and icon fade animations when toggling Mini-HUD mode</li>
+          <li>Refined Mini-HUD dimensions (230x92 px) and preserved button border-radius to prevent digit and control clipping</li>
+          <li>Fixed title bar control positioning to eliminate button jump during window transitions</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.0" date="2026-09-28">
       <description>
         <p>Minimalist UI overhaul, System Tray, and notification fixes:</p>

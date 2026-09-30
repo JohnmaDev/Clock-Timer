@@ -6,6 +6,13 @@ Desarrollada en Python + PyQt6 para Ubuntu / Linux (y compatible con Windows).
 import sys
 import os
 import signal
+
+# En Linux bajo sesión Wayland con XWayland activo, preferir 'xcb' con fallback a 'wayland' ("xcb;wayland")
+# para que 'WindowStaysOnTopHint' (Always On Top) y el reposicionamiento de ventana funcionen en GNOME Mutter
+if sys.platform.startswith("linux") and "QT_QPA_PLATFORM" not in os.environ:
+    if os.environ.get("WAYLAND_DISPLAY") and os.environ.get("DISPLAY"):
+        os.environ["QT_QPA_PLATFORM"] = "xcb;wayland"
+
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
 from app.window import FloatingClockTimerWindow
